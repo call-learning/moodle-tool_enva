@@ -67,17 +67,16 @@ function get_master_student_cohort_ids() {
 	return $DB->get_fieldset_select( 'cohort', 'id', 'name ' . $rexp );
 }
 
-function get_student_survey_nil_cohorts_id() {
-	return [ 1, 2, 3, 4, 5, 6, 10, 11, 12, 17 ]; // Master + thesis + Interne
-}
-
 function delete_user_surveyinfo() {
-	global $DB;
+	global $DB, $CFG;
 	try {
 		$transaction = $DB->start_delegated_transaction();
 		// First : delete all user fields which are named 'choix...'
 		$selecteduserfields = $DB->get_fieldset_select( 'user_info_field', "id", "shortname LIKE 'choix%'" );
 		$studentcohortsid = get_master_student_cohort_ids();
+		if (!empty($CFG->additionalstudentcohorts)) {
+			$studentcohortsid = array_merge($studentcohortsid, $CFG->additionalstudentcohorts);
+		}
 		// Delete all choice info fields for all users who belong to a cohort
 		$DB->delete_records_select( 'user_info_data',
 			'fieldid IN (' . implode( ',', $selecteduserfields ) . ')
