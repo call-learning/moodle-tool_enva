@@ -27,7 +27,7 @@ defined( 'MOODLE_INTERNAL' ) || die();
 require_once( "{$CFG->libdir}/csvlib.class.php" );
 
 
-define( 'ENVA_SURVEY_DUMMY_DATA', 'Autre');
+define( 'ENVA_SURVEY_DUMMY_DATA', 'Autre' );
 
 
 function export_cohorts_to_csv( $filename = "" ) {
@@ -57,8 +57,9 @@ function print_export_cohorts( $filename = "" ) {
 
 
 function get_student_cohorts_id() {
-	return [ 1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 17 ]; // Master + thesis + Interne
+	return [ 1, 2, 3, 4, 5, 6, 10, 11, 12, 17 ]; // Master + thesis + Interne
 }
+
 function get_master_student_cohort_ids() {
 	global $DB;
 	$rexp = $DB->sql_regex() . " '^A[0-9].*$'";
@@ -66,31 +67,38 @@ function get_master_student_cohort_ids() {
 	return $DB->get_fieldset_select( 'cohort', 'id', 'name ' . $rexp );
 }
 
+function get_student_survey_nil_cohorts_id() {
+	return [ 1, 2, 3, 4, 5, 6, 10, 11, 12, 17 ]; // Master + thesis + Interne
+}
+
 function delete_user_surveyinfo() {
 	global $DB;
 	try {
-		$transaction        = $DB->start_delegated_transaction();
+		$transaction = $DB->start_delegated_transaction();
 		// First : delete all user fields which are named 'choix...'
-		$selecteduserfields = $DB->get_fieldset_select( 'user_info_field', "id","shortname LIKE 'choix%'" );
-		
+		$selecteduserfields = $DB->get_fieldset_select( 'user_info_field', "id", "shortname LIKE 'choix%'" );
+		$studentcohortsid = get_master_student_cohort_ids();
 		// Delete all choice info fields for all users who belong to a cohort
 		$DB->delete_records_select( 'user_info_data',
 			'fieldid IN (' . implode( ',', $selecteduserfields ) . ')
 			AND EXISTS (SELECT id
-                FROM {cohort_members} cm WHERE {user_info_data}.userid = cm.userid LIMIT 1)');
+                FROM {cohort_members} cm WHERE {user_info_data}.userid = cm.userid AND cm.cohortid IN (' .
+			implode( ',', $studentcohortsid )
+			. ')  LIMIT 1)' );
 		
 		// Add dummy data ('Autre') into fields related to other users
-		$studentcohortsid = get_master_student_cohort_ids();
-		$allnonstudents = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {cohort_members} WHERE cohortid NOT IN ('.
-		                                      implode( ',',$studentcohortsid).')');
-		$userdatafield = new stdClass();
-		foreach($allnonstudents as $userid) {
-			foreach($selecteduserfields as $fieldid) {
-				$userdatafield->userid = $userid;
-				$userdatafield->data = ENVA_SURVEY_DUMMY_DATA;
+		$allnonstudents   = $DB->get_fieldset_sql( 'SELECT DISTINCT userid FROM {cohort_members} WHERE cohortid NOT IN (' .
+		                                           implode( ',', $studentcohortsid ) . ')' );
+		$userdatafield    = new stdClass();
+		foreach ( $allnonstudents as $userid ) {
+			foreach ( $selecteduserfields as $fieldid ) {
+				$userdatafield->userid     = $userid;
+				$userdatafield->data       = ENVA_SURVEY_DUMMY_DATA;
 				$userdatafield->dataformat = '0';
-				$userdatafield->fieldid = $fieldid;
-				$DB->insert_record('user_info_data',$userdatafield);
+				$userdatafield->fieldid    = $fieldid;
+				if (!$DB->record_exists('user_info_data', array ('userid'=>$userid, 'fieldid'=>$fieldid))) {
+					$DB->insert_record( 'user_info_data', $userdatafield );
+				}
 			}
 		}
 		$transaction->allow_commit();
