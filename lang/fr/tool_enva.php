@@ -11,9 +11,9 @@ $string['pluginname'] = 'Outils ENVA';
 
 // Tools
 $string['downloadcohortdata'] = 'Télécharger les Cohortes comme un CSV';
-$string['downloademptysurvey'] = 'Télécharger les étudiant avec pas de réponse à l\'enquête';
+$string['downloademptysurvey'] = 'Télécharger les étudiants avec une réponse vide à l\'enquête';
 $string['deletesurveyinfo'] = 'Effacer les données d\'enquête';
-$string['deleteyearoneemptysurvey']= 'Effacer les résultat d\'enquête vides (année 1)';
+$string['deleteyearoneemptysurvey']= 'Effacer les résultats d\'enquêtes vides (année 1)';
 $string['deletesurveyinfoconfirm'] = 'Confirmer l\'effacement';
 $string['deleteyearoneemptysurveyconfirm'] = 'Confirmer l\'effacement';
-$string['emptyyearonesurveydatatask'] = 'ENVA: Tâche de purge des résultat d\'enquête vides';
+$string['emptyyearonesurveydatatask'] = 'ENVA: Tâche de purge des résultats d\'enquête vides';
