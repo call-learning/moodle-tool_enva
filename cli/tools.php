@@ -51,7 +51,7 @@ if ($options['help']) {
     cli_writeln($usage);
     exit(2);
 }
-$possiblefunctions = array('print_export_cohorts');
+$possiblefunctions = array('print_export_cohorts','print_yearone_users_with_empty_data');
 
 if ($options['name'] === null) {
     $options['name'] = $possiblefunctions[0];

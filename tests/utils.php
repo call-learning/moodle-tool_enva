@@ -15,17 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tools for ENVA
+ * Tests for tools for ENVA
  *
  * @package    tool_enva
  * @copyright  2019 Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tool_enva';
-$plugin->version   = 2019072604;
-$plugin->release = '1.0';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->requires  = 2018120305; // Moodle 3.6.
+defined( 'MOODLE_INTERNAL' ) || die();

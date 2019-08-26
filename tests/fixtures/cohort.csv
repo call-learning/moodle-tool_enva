@@ -1,0 +1,22 @@
+"id","contextid","name","idnumber","description","descriptionformat","visible","component","timecreated","timemodified","theme"
+"1","1","A1","A1",,"1","1",,"1408526754","1408526843",NULL
+"2","1","A3","A3",,"1","1",,"1408526765","1408526857",NULL
+"3","1","A2","A2",,"1","1",,"1408526775","1408526850",NULL
+"4","1","A4","A4",,"1","1",,"1408526782","1408526864",NULL
+"5","1","A5-Autre","A5-Autre",,"1","1",,"1408526788","1408546049",NULL
+"6","1","Mobilite entrante","Mobilité entrante",,"1","1",,"1408526824","1502983445",NULL
+"8","1","Personnels","Personnels",,"1","1",,"1408550543","1563784004",NULL
+"9","1","Enseignants","Enseignants",,"1","1",,"1408550569","1484552180",NULL
+"10","1","A5-Bovine","A5-Bovine",,"1","1",,"1408550645","1408550701",NULL
+"11","1","A5-Canine","A5-Canine","<p>Enide PARAN (césure médicale) est toujours présente dans cette cohorte (quid?)</p>","1","1",,"1408550659","1564400609",NULL
+"12","1","A5-Equine","A5-Equine",,"1","1",,"1408550675","1408550675",NULL
+"14","1","Interne-Bovine","Interne-Bovine",,"1","1",,"1408550804","1408632223",NULL
+"15","1","Interne-Equine","Interne-Equine",,"1","1",,"1408550820","1408550820",NULL
+"16","1","Enseignants émérites et Dr honoraires","Enseignants émérites et Dr honoraires",,"1","1",,"1408723019","1515159399",NULL
+"17","1","Thésards_promo 2018","Thésards_promo 2018","<p>Promo 2018 sortis n'ayant pas encore soutenu leur thèse</p>","1","1",,"1409211517","1564045151",NULL
+"22","1","AH-PH","AH-PH",,"1","1",,"1502121107","1502121107",NULL
+"24","1","Mobilité entrante (1) A2_A3","Mob entrante (1) A2_A3","<p>création décembre 2017 pour meilleur gestion Mb entrante (CC/CR/JV)</p>","1","1",,"1512489483","1512490704",NULL
+"25","1","Mobilité entrante (2) A3_A4","Mob entrante (2) A3_A4","<p>création décembre 2017 pour meilleur gestion Mb entrante (CC/CR/JV)</p>","1","1",,"1512490462","1512490713",NULL
+"26","1","Mobilité entrante (3) A4_A5","Mob entrante (3) A4_A5","<p>création décembre 2017 pour meilleur gestion Mb entrante (CC/CR/JV)</p>","1","1",,"1512490568","1531829452",NULL
+"27","1","Interne-canine","Interne-canine","<p>cohorte ajustée le jeudi 21 mars 2019 par CC (renommée suite à la suppression de la cohorte mélangeant internes 2017 2018 et ceux de cette année)<br /></p>","1","1",,"1531373839","1553189713",NULL
+"28","1","Thésards_promo 2019","Thésards_promo 2019",,"1","1",,"1564400735","1564400735",

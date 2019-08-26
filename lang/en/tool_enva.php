@@ -10,6 +10,10 @@
 $string['pluginname'] = 'ENVA Utils/Tools';
 
 // Tools
-$string['downloadcohortdata'] = "Download Cohorts as CSV";
-$string['deletesurveyinfo'] = "Delete Survey Data";
-$string['deletesurveyinfoconfirm'] = "Confirm Survey Data Deletion";
+$string['downloadcohortdata'] = 'Download Cohorts as CSV';
+$string['downloademptysurvey'] = 'Download Student with empty survey data';
+$string['deletesurveyinfo'] = 'Delete Survey Data';
+$string['deleteyearoneemptysurvey']= 'Delete empty year one survey';
+$string['deletesurveyinfoconfirm'] = 'Confirm Survey Data Deletion';
+$string['deleteyearoneemptysurveyconfirm'] = 'Confirm Empty Survey Data for year one deletion';
+$string['emptyyearonesurveydatatask'] = 'ENVA: Delete empty survey data Task';

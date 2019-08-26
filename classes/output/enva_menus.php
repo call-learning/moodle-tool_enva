@@ -52,9 +52,18 @@ class enva_menus implements renderable {
 				'title' => get_string('downloadcohortdata', 'tool_enva'),
 			],
 			(object) [
+				'url' => new moodle_url($rooturl,array('action'=>'downloademptysurvey')),
+				'title' => get_string('downloademptysurvey', 'tool_enva'),
+			],
+			(object) [
 				'url' => new moodle_url($rooturl,array('action'=>'deletesurveyinfo')),
 				'title' => get_string('deletesurveyinfo', 'tool_enva'),
-			]
+			],
+						(object) [
+							'url' => new moodle_url($rooturl,array('action'=>'deleteyearoneemptysurvey')),
+							'title' => get_string('deleteyearoneemptysurvey', 'tool_enva'),
+						]
+
 		];
 	}
 }
