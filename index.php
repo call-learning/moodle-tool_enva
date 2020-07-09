@@ -18,64 +18,66 @@
  * Tools for ENVA
  *
  * @package    tool_enva
- * @copyright  2019 Laurent David <laurent@call-learning.fr>
+ * @copyright  2020 CALL Learning
+ * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define( 'NO_OUTPUT_BUFFERING', true ); // progress bar is used here
+use tool_enva\output\enva_menus;
 
-require( __DIR__ . '/../../../config.php' );
-require_once( $CFG->dirroot . '/' . $CFG->admin . '/tool/enva/locallib.php' );
-require_once( $CFG->libdir . '/adminlib.php' );
+define('NO_OUTPUT_BUFFERING', true); // Progress bar is used here.
 
-require_login( null, false );
+require(__DIR__ . '/../../../config.php');
+require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/enva/locallib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
-$action = optional_param( 'action', '', PARAM_ALPHA );
-$step   = optional_param( 'step', "", PARAM_ALPHA );
+require_login(null, false);
 
-admin_externalpage_setup( 'tool_enva' );
-// pre-output actions
-switch ( $action ) {
-	case 'downloadcohortdata':
-		require_sesskey();
-		$csvexport = export_cohorts_to_csv();
-		$csvexport->download_file();
-		exit;
-		break;
-	case 'downloademptysurvey':
-		require_sesskey();
-		$csvexport = export_yearone_users_with_empty_data();
-		$csvexport->download_file();
-		exit;
+$action = optional_param('action', '', PARAM_ALPHA);
+$step = optional_param('step', "", PARAM_ALPHA);
+
+admin_externalpage_setup('tool_enva');
+// Pre-output actions.
+switch ($action) {
+    case 'downloadcohortdata':
+        require_sesskey();
+        $csvexport = export_cohorts_to_csv();
+        $csvexport->download_file();
+        exit;
+        break;
+    case 'downloademptysurvey':
+        require_sesskey();
+        $csvexport = export_yearone_users_with_empty_data();
+        $csvexport->download_file();
+        exit;
 }
 
-$output = $PAGE->get_renderer( 'tool_enva' );
-// output starts here
+$output = $PAGE->get_renderer('tool_enva');
+// Output starts here.
 echo $output->header();
-echo $output->heading( get_string( 'pluginname', 'tool_enva' ) );
-if ( strpos( $action, 'delete' ) === 0 ) {
-	require_sesskey();
-	if ( ! $step ) {
-		echo $output->confirm( get_string( $action.'confirm', 'tool_enva' ),
-			new moodle_url( $PAGE->url, array( 'action' => $action, 'step' => "delete" ) ),
-			new moodle_url( $PAGE->url ) );
-		echo $output->footer();
-		exit;
-		
-	} else if ( $step == "delete" ) {
-		switch ( $action ) {
-			case 'deleteusurveyinfo':
-				delete_user_yearly_surveyinfo();
-				break;
-			case 'deleteyearoneemptysurvey':
-				delete_user_surveyinfo_yearone_when_empty();
-				break;
-		}
-		echo get_string('success');
-	}
-	
+echo $output->heading(get_string('pluginname', 'tool_enva'));
+if (strpos($action, 'delete') === 0) {
+    require_sesskey();
+    if (!$step) {
+        echo $output->confirm(get_string($action . 'confirm', 'tool_enva'),
+            new moodle_url($PAGE->url, array('action' => $action, 'step' => "delete")),
+            new moodle_url($PAGE->url));
+        echo $output->footer();
+        exit;
+
+    } else if ($step == "delete") {
+        switch ($action) {
+            case 'deleteusurveyinfo':
+                delete_user_yearly_surveyinfo();
+                break;
+            case 'deleteyearoneemptysurvey':
+                delete_user_surveyinfo_yearone_when_empty();
+                break;
+        }
+        echo get_string('success');
+    }
+
 }
 
-
-echo $output->render( new \tool_enva\output\enva_menus() );
+echo $output->render(new enva_menus());
 echo $output->footer();

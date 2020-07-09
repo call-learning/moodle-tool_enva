@@ -17,33 +17,36 @@
 /**
  * Tools for ENVA
  * Empty survey data regular job
+ *
  * @package    tool_enva
  * @copyright  2019 Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_enva\task;
+
 use core\task\scheduled_task;
+
 defined('MOODLE_INTERNAL') || die();
 
 class empty_yearone_survey_data extends scheduled_task {
-	/**
-	 * Get a descriptive name for this task (shown to admins).
-	 *
-	 * @return string
-	 */
-	public function get_name() {
-		return get_string('emptyyearonesurveydatatask', 'tool_enva');
-	}
-	
-	/**
-	 * Do the job.
-	 * Throw exceptions on errors (the job will be retried).
-	 */
-	public function execute() {
-		global $CFG;
-		require_once($CFG->dirroot.'/admin/tool/enva/locallib.php');
-		delete_user_surveyinfo_yearone_when_empty();
-	}
-	
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('emptyyearonesurveydatatask', 'tool_enva');
+    }
+
+    /**
+     * Do the job.
+     * Throw exceptions on errors (the job will be retried).
+     */
+    public function execute() {
+        global $CFG;
+        require_once($CFG->dirroot . '/admin/tool/enva/locallib.php');
+        delete_user_surveyinfo_yearone_when_empty();
+    }
+
 }

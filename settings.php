@@ -18,16 +18,17 @@
  * Tools for ENVA
  *
  * @package    tool_enva
- * @copyright  2019 Laurent David <laurent@call-learning.fr>
+ * @copyright  2020 CALL Learning
+ * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-	global $ADMIN;
-	$ADMIN->add('server', new admin_externalpage(
-    	'tool_enva',
-	    get_string('pluginname', 'tool_enva'),
-	    "$CFG->wwwroot/$CFG->admin/tool/enva/index.php"));
+    global $ADMIN;
+    $ADMIN->add('server', new admin_externalpage(
+        'tool_enva',
+        get_string('pluginname', 'tool_enva'),
+        "$CFG->wwwroot/$CFG->admin/tool/enva/index.php"));
 }

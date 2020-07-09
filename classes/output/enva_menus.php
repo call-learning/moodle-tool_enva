@@ -18,52 +18,58 @@
  * Tools for ENVA
  *
  * @package    tool_enva
- * @copyright  2019 Laurent David <laurent@call-learning.fr>
+ * @copyright  2020 CALL Learning
+ * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_enva\output;
 defined('MOODLE_INTERNAL') || die();
 
-use renderable;
+use coding_exception;
+use moodle_exception;
 use moodle_url;
+use renderable;
 use renderer_base;
-use stdClass;
-use templatable;
-
 
 /**
  * Rendering methods
+ *
+ * @copyright  2020 CALL Learning
+ * @author     Laurent David <laurent@call-learning.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enva_menus implements renderable {
-	/**
-	 * Export the data.
-	 *
-	 * @param renderer_base $output
-	 *
-	 * @return stdClass
-	 */
-	public function export_for_template( renderer_base $output ) {
-		global $CFG;
-		$rooturl = "$CFG->wwwroot/$CFG->admin/tool/enva/index.php";
-		return [
-			(object) [
-				'url' => new moodle_url($rooturl,array('action'=>'downloadcohortdata')),
-				'title' => get_string('downloadcohortdata', 'tool_enva'),
-			],
-			(object) [
-				'url' => new moodle_url($rooturl,array('action'=>'downloademptysurvey')),
-				'title' => get_string('downloademptysurvey', 'tool_enva'),
-			],
-			(object) [
-				'url' => new moodle_url($rooturl,array('action'=>'deletesurveyinfo')),
-				'title' => get_string('deletesurveyinfo', 'tool_enva'),
-			],
-						(object) [
-							'url' => new moodle_url($rooturl,array('action'=>'deleteyearoneemptysurvey')),
-							'title' => get_string('deleteyearoneemptysurvey', 'tool_enva'),
-						]
+    /**
+     * Export the data.
+     *
+     * @param renderer_base $output
+     *
+     * @return array
+     * @throws coding_exception
+     * @throws moodle_exception
+     */
+    public function export_for_template(renderer_base $output) {
+        global $CFG;
+        $rooturl = "$CFG->wwwroot/$CFG->admin/tool/enva/index.php";
+        return [
+            (object) [
+                'url' => new moodle_url($rooturl, array('action' => 'downloadcohortdata')),
+                'title' => get_string('downloadcohortdata', 'tool_enva'),
+            ],
+            (object) [
+                'url' => new moodle_url($rooturl, array('action' => 'downloademptysurvey')),
+                'title' => get_string('downloademptysurvey', 'tool_enva'),
+            ],
+            (object) [
+                'url' => new moodle_url($rooturl, array('action' => 'deletesurveyinfo')),
+                'title' => get_string('deletesurveyinfo', 'tool_enva'),
+            ],
+            (object) [
+                'url' => new moodle_url($rooturl, array('action' => 'deleteyearoneemptysurvey')),
+                'title' => get_string('deleteyearoneemptysurvey', 'tool_enva'),
+            ]
 
-		];
-	}
+        ];
+    }
 }

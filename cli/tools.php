@@ -16,13 +16,18 @@
 
 /**
  * CLI script allowing to run internal/ setup functions multiple times
+ *
+ * @package    tool_enva
+ * @copyright  2020 CALL Learning
+ * @author     Laurent David <laurent@call-learning.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define('CLI_SCRIPT', true);
 
 require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir . '/clilib.php');
-include_once(__DIR__ . '/../locallib.php');
+require_once(__DIR__ . '/../locallib.php');
 
 $usage = "Run different setup script for testing purpose
 
@@ -36,10 +41,10 @@ Options:
 ";
 
 list($options, $unrecognised) = cli_get_params([
-        'help' => false,
-        'name' => null,
+    'help' => false,
+    'name' => null,
 ], [
-        'h' => 'help'
+    'h' => 'help'
 ]);
 
 if ($unrecognised) {
@@ -51,7 +56,7 @@ if ($options['help']) {
     cli_writeln($usage);
     exit(2);
 }
-$possiblefunctions = array('print_export_cohorts','print_yearone_users_with_empty_data');
+$possiblefunctions = array('print_export_cohorts', 'print_yearone_users_with_empty_data');
 
 if ($options['name'] === null) {
     $options['name'] = $possiblefunctions[0];

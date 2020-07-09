@@ -18,7 +18,8 @@
  * Tools for ENVA
  *
  * @package    tool_enva
- * @copyright  2019 Laurent David <laurent@call-learning.fr>
+ * @copyright  2020 CALL Learning
+ * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,23 +28,22 @@ defined('MOODLE_INTERNAL') || die();
 
 use plugin_renderer_base;
 
-
 /**
  * Rendering methods
  */
 class renderer extends plugin_renderer_base {
-	
-	/**
-	 * Renders enva tool menu
-	 *
-	 * @return string HTML
-	 */
-	protected function render_enva_menus(enva_menus $menu) {
-		$output = '';
-		foreach ($menu->export_for_template($this) as $item) {
-			$output .= $this->single_button($item->url->out(), $item->title);
-		}
-		return $this->box($output, 'menu');
-	}
-	
+
+    /**
+     * Renders enva tool menu
+     *
+     * @return string HTML
+     */
+    protected function render_enva_menus(enva_menus $menu) {
+        $output = '';
+        foreach ($menu->export_for_template($this) as $item) {
+            $output .= $this->single_button($item->url->out(), $item->title);
+        }
+        return $this->box($output, 'menu');
+    }
+
 }
