@@ -20,7 +20,56 @@
  * @package    tool_enva
  * @copyright  2020 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or laterr
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . '/cohort/lib.php');
+require_once($CFG->dirroot . '/user/profile/lib.php');
+
+/**
+ * Class utils_tests
+ *
+ * @package    tool_enva
+ * @copyright  2020 CALL Learning
+ * @author     Laurent David <laurent@call-learning.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class tool_enva_base_test extends advanced_testcase {
+    const USER_PER_COHORT = 10;
+    public $users = array();
+
+    public function setUp() {
+        parent::setUp();
+        global $DB;
+        $this->resetAfterTest();
+        // Setup custom profile fields.
+        $dataset = $this->createCsvDataSet(array(
+                'cohort' => __DIR__ . '/fixtures/cohort.csv',
+                'course' => __DIR__ . '/fixtures/course.csv',
+                'user_info_field' => __DIR__ . '/fixtures/user_info_field.csv',
+                'role' => __DIR__ . '/fixtures/role.csv'
+            )
+        );
+        $this->loadDataSet($dataset);
+
+        $evecohorts = $DB->get_records('cohort');
+        $i = 0;
+
+        foreach ($evecohorts as $cohort) {
+            for ($j = 0; $j < self::USER_PER_COHORT; $j++) { // 10 users in each cohort.
+                $user = $this->getDataGenerator()->create_user();
+                cohort_add_member($cohort->id, $user->id);
+                $this->users[$i++] = $user;
+            }
+        }
+
+    }
+
+    public function tearDown() {
+        parent::tearDown();
+        $this->users = null;
+    }
+}

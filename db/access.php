@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tools for ENVA
+ * Defines the capabilities used by the hyperplanningsync admin tool
  *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
@@ -23,16 +23,23 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'ENVA Utils/Tools';
-$string['tool/enva:managecohortcontent'] = 'Can use ENVA Tools';
+defined('MOODLE_INTERNAL') || die();
 
-// Tools.
-$string['managecohortcontent'] = 'Cohort content';
-$string['managecohortsync'] = 'Cohort Synchronisation in courses';
-$string['downloadcohortdata'] = 'Download Cohorts as CSV';
-$string['downloademptysurvey'] = 'Download Student with empty survey data';
-$string['deletesurveyinfo'] = 'Delete Survey Data';
-$string['deleteyearoneemptysurvey'] = 'Delete empty year one survey';
-$string['deletesurveyinfoconfirm'] = 'Confirm Survey Data Deletion';
-$string['deleteyearoneemptysurveyconfirm'] = 'Confirm Empty Survey Data for year one deletion';
-$string['emptyyearonesurveydatatask'] = 'ENVA: Delete empty survey data Task';
+$capabilities = array(
+    'tool/enva:managecohortcontent' => array(
+        'riskbitmask' => RISK_DATALOSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        ),
+    ),
+    'tool/enva:managecohortsync' => array(
+        'riskbitmask' => RISK_DATALOSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        ),
+    ),
+);

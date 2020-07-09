@@ -25,11 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_enva\locallib\manage_cohort_content;
 global $CFG;
-require_once($CFG->dirroot . '/admin/tool/enva/locallib.php');
 require_once($CFG->dirroot . '/cohort/lib.php');
 require_once($CFG->dirroot . '/user/profile/lib.php');
-require_once('./utils.php');
+require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
 
 /**
  * Class utils_tests
@@ -38,39 +38,7 @@ require_once('./utils.php');
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class utils_tests extends advanced_testcase {
-    const USER_PER_COHORT = 10;
-    public $users = array();
-
-    public function setUp() {
-        parent::setUp();
-        global $DB;
-        $this->resetAfterTest();
-        // Setup custom profile fields.
-        $dataset = $this->createCsvDataSet(array(
-                'cohort' => __DIR__ . '/fixtures/cohort.csv',
-                'user_info_field' => __DIR__ . '/fixtures/user_info_field.csv'
-            )
-        );
-        $this->loadDataSet($dataset);
-
-        $evecohorts = $DB->get_records('cohort');
-        $i = 0;
-
-        foreach ($evecohorts as $cohort) {
-            for ($j = 0; $j < self::USER_PER_COHORT; $j++) { // 10 users in each cohort.
-                $user = $this->getDataGenerator()->create_user();
-                cohort_add_member($cohort->id, $user->id);
-                $this->users[$i++] = $user;
-            }
-        }
-    }
-
-    public function tearDown() {
-        parent::tearDown();
-        $this->users = null;
-    }
-
+class tool_enva_tests extends tool_enva_base_test {
     public function test_delete_user_surveyinfo() {
         global $DB;
         $this->resetAfterTest(true);
@@ -97,7 +65,7 @@ class utils_tests extends advanced_testcase {
             'choix3' => 'Autre'
         ));
 
-        delete_user_yearly_surveyinfo();
+        manage_cohort_content::delete_user_yearly_surveyinfo();
 
         $useryearonefields = profile_get_user_fields_with_data($useryearone->id);
         $useryeartwofields = profile_get_user_fields_with_data($useryeartwo->id);
@@ -127,7 +95,6 @@ class utils_tests extends advanced_testcase {
     }
 
     public function test_delete_user_surveyinfo_yearone_when_empty() {
-        global $DB;
         $this->resetAfterTest(true);
         $useryearone = $this->users[0];
         $useryearonewithresponse = $this->users[1];
@@ -159,7 +126,7 @@ class utils_tests extends advanced_testcase {
             'choix3' => 'Autre'
         ));
 
-        delete_user_surveyinfo_yearone_when_empty();
+        manage_cohort_content::delete_user_surveyinfo_yearone_when_empty();
 
         $useryearonefields = profile_get_user_fields_with_data($useryearone->id);
         $useryearonewithresponsefields = profile_get_user_fields_with_data($useryearonewithresponse->id);

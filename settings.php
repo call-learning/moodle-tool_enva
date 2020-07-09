@@ -27,8 +27,25 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
     global $ADMIN;
-    $ADMIN->add('server', new admin_externalpage(
+
+    $envatools = new admin_category(
         'tool_enva',
-        get_string('pluginname', 'tool_enva'),
-        "$CFG->wwwroot/$CFG->admin/tool/enva/index.php"));
+        get_string('pluginname', 'tool_enva')
+    );
+    $envatools->add('tool_enva', new admin_externalpage(
+        'enva_manage_cohortcontent',
+        get_string('managecohortcontent', 'tool_enva'),
+        "$CFG->wwwroot/$CFG->admin/tool/enva/manage_cohort_content.php",
+        'tool/enva:managecohortcontent'
+        )
+    );
+
+    $envatools->add('tool_enva', new admin_externalpage(
+            'enva_manage_cohortsync',
+            get_string('managecohortsync', 'tool_enva'),
+            "$CFG->wwwroot/$CFG->admin/tool/enva/manage_cohort_sync.php",
+            'tool/enva:managecohortsync'
+        )
+    );
+    $ADMIN->add('courses', $envatools);
 }

@@ -28,7 +28,6 @@ use tool_enva\output\enva_menus;
 define('NO_OUTPUT_BUFFERING', true); // Progress bar is used here.
 
 require(__DIR__ . '/../../../config.php');
-require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/enva/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login(null, false);
@@ -36,48 +35,13 @@ require_login(null, false);
 $action = optional_param('action', '', PARAM_ALPHA);
 $step = optional_param('step', "", PARAM_ALPHA);
 
-admin_externalpage_setup('tool_enva');
-// Pre-output actions.
-switch ($action) {
-    case 'downloadcohortdata':
-        require_sesskey();
-        $csvexport = export_cohorts_to_csv();
-        $csvexport->download_file();
-        exit;
-        break;
-    case 'downloademptysurvey':
-        require_sesskey();
-        $csvexport = export_yearone_users_with_empty_data();
-        $csvexport->download_file();
-        exit;
-}
+admin_externalpage_setup('enva_manage_cohortsync');
 
 $output = $PAGE->get_renderer('tool_enva');
+$form = new \tool_enva\forms\cohort_sync_form();
+
 // Output starts here.
 echo $output->header();
-echo $output->heading(get_string('pluginname', 'tool_enva'));
-if (strpos($action, 'delete') === 0) {
-    require_sesskey();
-    if (!$step) {
-        echo $output->confirm(get_string($action . 'confirm', 'tool_enva'),
-            new moodle_url($PAGE->url, array('action' => $action, 'step' => "delete")),
-            new moodle_url($PAGE->url));
-        echo $output->footer();
-        exit;
-
-    } else if ($step == "delete") {
-        switch ($action) {
-            case 'deleteusurveyinfo':
-                delete_user_yearly_surveyinfo();
-                break;
-            case 'deleteyearoneemptysurvey':
-                delete_user_surveyinfo_yearone_when_empty();
-                break;
-        }
-        echo get_string('success');
-    }
-
-}
-
-echo $output->render(new enva_menus());
+echo $output->heading(get_string('managecohortsync', 'tool_enva'));
+echo $form->render();
 echo $output->footer();

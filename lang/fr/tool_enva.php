@@ -24,8 +24,11 @@
  */
 
 $string['pluginname'] = 'Outils ENVA';
+$string['tool/enva:managecohortcontent'] = 'Peut utiliser les outils ENVA';
 
 // Tools.
+$string['managecohortcontent'] = 'Contenu des cohortes';
+$string['managecohortsync'] = 'Synchronisation des cohortes';
 $string['downloadcohortdata'] = 'Télécharger les Cohortes comme un CSV';
 $string['downloademptysurvey'] = 'Télécharger les étudiants avec une réponse vide à l\'enquête';
 $string['deletesurveyinfo'] = 'Effacer les données d\'enquête';

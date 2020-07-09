@@ -1,0 +1,7 @@
+"id","name","shortname","description","sortorder","archetype"
+"28","Publicateur de cours","secretaire","<p>Publicateur de cours</p>","10","editingteacher"
+"36","Responsable de cours","responsablecourse","<p>Responsable de cours</p>","20","editingteacher"
+"38","Étudiant invité","student_invite","<p>Etudiant invité</p>","30","student"
+"39","Enseignant invité","enseignant_invite","<p>enseignant invité</p>","40","student"
+"40","Personnel invité","personnel_invite","<p>Personnel invité</p>","50","student"
+"43","Accès_Tests_Etudiants","accs_tests_etudiants","<p>Permissions limitées uniquement à la possibilité de réaliser des tests.</p>","60",
