@@ -17,12 +17,15 @@
 /**
  * Tools for ENVA
  *
+ * Manage cohort content
+ *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_enva\locallib\manage_cohort_content;
 use tool_enva\output\enva_menus;
 
 define('NO_OUTPUT_BUFFERING', true); // Progress bar is used here.
@@ -40,13 +43,13 @@ admin_externalpage_setup('enva_manage_cohortcontent');
 switch ($action) {
     case 'downloadcohortdata':
         require_sesskey();
-        $csvexport = \tool_enva\locallib\manage_cohort_content::export_cohorts_to_csv();
+        $csvexport = manage_cohort_content::export_cohorts_to_csv();
         $csvexport->download_file();
         exit;
         break;
     case 'downloademptysurvey':
         require_sesskey();
-        $csvexport = \tool_enva\locallib\manage_cohort_content::export_yearone_users_with_empty_data();
+        $csvexport = manage_cohort_content::export_yearone_users_with_empty_data();
         $csvexport->download_file();
         exit;
 }
@@ -67,15 +70,14 @@ if (strpos($action, 'delete') === 0) {
     } else if ($step == "delete") {
         switch ($action) {
             case 'deleteusurveyinfo':
-                \tool_enva\locallib\manage_cohort_content::delete_user_yearly_surveyinfo();
+                manage_cohort_content::delete_user_yearly_surveyinfo();
                 break;
             case 'deleteyearoneemptysurvey':
-                \tool_enva\locallib\manage_cohort_content::delete_user_surveyinfo_yearone_when_empty();
+                manage_cohort_content::delete_user_surveyinfo_yearone_when_empty();
                 break;
         }
         echo get_string('success');
     }
-
 }
 
 echo $output->render(new enva_menus());

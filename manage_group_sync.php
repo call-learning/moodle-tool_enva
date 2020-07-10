@@ -16,8 +16,7 @@
 
 /**
  * Tools for ENVA
- *
- * Manage cohort sync
+ * Manage course groups
  *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
@@ -25,28 +24,27 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_enva\csv\cohort_sync_importer;
-use tool_enva\forms\cohort_sync_form;
+use tool_enva\csv\group_sync_importer;
+use tool_enva\forms\group_sync_form;
 
 require(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
-
 require_login(null, false);
 
-admin_externalpage_setup('enva_manage_cohortsync');
+admin_externalpage_setup('enva_manage_groupsync');
 
 $output = $PAGE->get_renderer('tool_enva');
-$form = new cohort_sync_form();
+$form = new group_sync_form();
 
 $importer = null;
 if ($form->is_submitted() && $data = $form->get_data()) {
-    if ($csvcontent = $form->get_file_content('cohortsyncfile')) {
-        $importer = new cohort_sync_importer($csvcontent, $data->encoding, $data->delimiter_name);
+    if ($csvcontent = $form->get_file_content('groupsyncfile')) {
+        $importer = new group_sync_importer($csvcontent, $data->encoding, $data->delimiter_name);
     }
 }
 // Output starts here.
 echo $output->header();
-echo $output->heading(get_string('managecohortsync', 'tool_enva'));
+echo $output->heading(get_string('managegroupsync', 'tool_enva'));
 if ($importer) {
     if ($importer->get_error()) {
         echo $OUTPUT->box($importer->get_error(), 'alert alert-danger');
@@ -55,7 +53,6 @@ if ($importer) {
     }
     echo $OUTPUT->single_button(new moodle_url(strip_querystring($FULLME)),
         get_string('continue'));
-
 } else {
     echo $form->render();
 }

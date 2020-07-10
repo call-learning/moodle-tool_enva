@@ -25,19 +25,19 @@
 
 namespace tool_enva\task;
 
-use core\task\scheduled_task;
-use tool_enva\locallib\manage_cohort_content;
+use core\task\adhoc_task;
+use null_progress_trace;
 
 defined('MOODLE_INTERNAL') || die();
 
-class empty_yearone_survey_data extends scheduled_task {
+class sync_all_course_cohort_enrol extends adhoc_task {
     /**
      * Get a descriptive name for this task (shown to admins).
      *
      * @return string
      */
     public function get_name() {
-        return get_string('emptyyearonesurveydatatask', 'tool_enva');
+        return get_string('syncallcohortcourses', 'tool_enva');
     }
 
     /**
@@ -45,7 +45,18 @@ class empty_yearone_survey_data extends scheduled_task {
      * Throw exceptions on errors (the job will be retried).
      */
     public function execute() {
-        manage_cohort_content::delete_user_surveyinfo_yearone_when_empty();
+        global $CFG;
+        $data = $this->get_custom_data();
+        require_once("$CFG->dirroot/enrol/cohort/locallib.php");
+
+        if ($data && !empty($data->courses)) {
+            foreach ($data->courses as $courseid) {
+                $trace = new null_progress_trace();
+                enrol_cohort_sync($trace, $courseid);
+                $trace->finished();
+            }
+        }
+
     }
 
 }

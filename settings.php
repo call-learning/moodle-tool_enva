@@ -33,10 +33,10 @@ if ($hassiteconfig) {
         get_string('pluginname', 'tool_enva')
     );
     $envatools->add('tool_enva', new admin_externalpage(
-        'enva_manage_cohortcontent',
-        get_string('managecohortcontent', 'tool_enva'),
-        "$CFG->wwwroot/$CFG->admin/tool/enva/manage_cohort_content.php",
-        'tool/enva:managecohortcontent'
+            'enva_manage_cohortcontent',
+            get_string('managecohortcontent', 'tool_enva'),
+            "$CFG->wwwroot/$CFG->admin/tool/enva/manage_cohort_content.php",
+            'tool/enva:managecohortcontent'
         )
     );
 
@@ -47,5 +47,13 @@ if ($hassiteconfig) {
             'tool/enva:managecohortsync'
         )
     );
+    $envatools->add('tool_enva', new admin_externalpage(
+            'enva_manage_groupsync',
+            get_string('managegroupsync', 'tool_enva'),
+            "$CFG->wwwroot/$CFG->admin/tool/enva/manage_group_sync.php",
+            'tool/enva:managegroupsync'
+        )
+    );
+
     $ADMIN->add('courses', $envatools);
 }

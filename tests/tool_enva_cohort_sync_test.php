@@ -27,14 +27,14 @@ use tool_enva\csv\cohort_sync_importer;
 
 defined('MOODLE_INTERNAL') || die();
 
-
 global $CFG;
 require_once($CFG->dirroot . '/cohort/lib.php');
 require_once($CFG->dirroot . '/user/profile/lib.php');
 require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
 
 /**
- * Class utils_tests
+ * Class tool_enva_cohort_sync_test
+ *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>
@@ -45,15 +45,23 @@ class tool_enva_cohort_sync_test extends tool_enva_base_test {
         global $DB;
         $this->resetAfterTest(true);
 
+        // Create three test users before we do the import.
+        // We expect them not to be enrolled until we trigger the adhoc task.
+        // If we added the student after the import, they would be added automatically via the usual trigger.
+        $usera1 = $this->create_user_in_cohort('A1');
+        $usera2 = $this->create_user_in_cohort('A2');
+        $usera5 = $this->create_user_in_cohort('A5-Bovine');
+
+        // Now do the cohort sync import.
         $importer = new cohort_sync_importer(file_get_contents(__DIR__ . '/fixtures/cohort_sync_example.csv'));
 
         $this->assertEquals('', $importer->get_error());
 
         $importer->process_import();
-        $studentrole = $DB->get_record('role', array('shortname'=>'student'));
-        $studentguestrole = $DB->get_record('role', array('shortname'=>'student_invite'));
+        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+        $studentguestrole = $DB->get_record('role', array('shortname' => 'student_invite'));
 
-        $cohortsync_assoc = array(
+        $cohortsyncassoc = array(
             '502' => array(
                 'A1' => $studentrole->id,
                 'A2' => $studentguestrole->id,
@@ -62,25 +70,52 @@ class tool_enva_cohort_sync_test extends tool_enva_base_test {
             ),
             '604' => array(
                 'A5-Autre' => $studentrole->id,
-                'A5-Bovine' => $studentguestrole->id,
-                'A5-Canine' => $studentguestrole->id,
-                'A5-Equine' => $studentguestrole->id,
+                'A5-Bovine' => $studentrole->id,
+                'A5-Canine' => $studentrole->id,
+                'A5-Equine' => $studentrole->id,
             )
         );
-        foreach($cohortsync_assoc as $courseid => $cohortassoc) {
-            foreach($cohortassoc as $cohortidnumber => $roleid) {
-                $cohortid = $DB->get_field('cohort','id', array('idnumber'=>$cohortidnumber));
-                $enrolrecord =$DB->get_record('enrol', array(
+
+        foreach ($cohortsyncassoc as $courseid => $cohortassoc) {
+            foreach ($cohortassoc as $cohortidnumber => $roleid) {
+                $cohortid = $DB->get_field('cohort', 'id', array('idnumber' => $cohortidnumber));
+                $enrolrecord = $DB->get_record('enrol', array(
                     'courseid' => $courseid,
                     'enrol' => cohort_sync_importer::COHORT_SYNC_ENROL_PLUGIN_NAME,
                     'customint1' => $cohortid,
                     'roleid' => $roleid), '*', MUST_EXIST);
-                $this->assertTrue($enrolrecord);
+                $this->assertNotEmpty($enrolrecord);
                 $this->assertStringStartsWith(cohort_sync_importer::COHORT_SYNC_ENROL_PREFIX, $enrolrecord->name);
-                $this->assertEquals($cohortid, $enrolrecord->itemid);
+                $this->assertEquals($cohortid, $enrolrecord->customint1);
             }
         }
 
+        $contextcourse502 = context_course::instance(502);
+        $contextcourse604 = context_course::instance(604);
+
+        // Cohort are not yet synced.
+        $this->assertFalse(is_enrolled($contextcourse502, $usera1));
+        $this->assertFalse(is_enrolled($contextcourse502, $usera2));
+        $this->assertFalse(is_enrolled($contextcourse604, $usera5));
+        // Now sync them.
+        $this->runAdhocTasks();
+
+        // Now asserts that all student are enrolled where they should.
+        $this->assertTrue(is_enrolled($contextcourse502, $usera1));
+        $this->assertTrue(is_enrolled($contextcourse502, $usera2));
+        $this->assertTrue(is_enrolled($contextcourse604, $usera5));
+        $this->assertTrue(user_has_role_assignment(
+            $usera5->id,
+            $studentrole->id,
+            $contextcourse604->id));
+        $this->assertTrue(user_has_role_assignment(
+            $usera5->id,
+            $studentrole->id,
+            $contextcourse604->id));
+        $this->assertTrue(user_has_role_assignment(
+            $usera2->id,
+            $studentguestrole->id,
+            $contextcourse502->id));
     }
 }
 

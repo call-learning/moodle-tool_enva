@@ -28,7 +28,10 @@ defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use csv_export_writer;
+use dml_exception;
+use dml_transaction_exception;
 use moodle_exception;
+use stdClass;
 
 /**
  * Class manage_cohort_content
@@ -42,61 +45,24 @@ class manage_cohort_content {
     const ENVA_SURVEY_DUMMY_DATA = 'Autre';
 
     /**
-     * Get master student cohort ID
      *
-     * @return array
-     * @throws \dml_exception
+     *
+     * @param string $filename
+     * @return string
+     * @throws dml_exception
      */
-    public static function get_master_student_cohort_ids() {
-        global $DB;
-        $rexp = $DB->sql_regex() . " '^A[0-9].*$'";
+    public static function print_export_cohorts($filename = "") {
+        $csvexport = self::export_cohorts_to_csv($filename);
 
-        return $DB->get_fieldset_select('cohort', 'id', 'name ' . $rexp);
+        return $csvexport->print_csv_data();
     }
-
-    /**
-     *
-     *
-     * @return array
-     * @throws \dml_exception
-     */
-    public static function get_survey_cohorts_list() {
-        global $CFG;
-
-        $studentcohortsid = self::get_master_student_cohort_ids();
-        if (!empty($CFG->additionalstudentcohorts)) {
-            $studentcohortsid = array_merge($studentcohortsid, $CFG->additionalstudentcohorts);
-        }
-
-        return $studentcohortsid;
-    }
-
-    /**
-     * Get SQL query to retrieve user info field data for the survey
-     *
-     * @return array
-     * @throws coding_exception
-     * @throws \dml_exception
-     */
-    public static function get_sql_user_data_parts() {
-        global $DB;
-        $studentcohortsid = self::get_survey_cohorts_list();
-        // Select all user fields which are named 'choix...'.
-        $selecteduserfields = $DB->get_fieldset_select('user_info_field', "id", "shortname LIKE 'choix%'");
-        list($sqlcohortid, $paramscohortid) = $DB->get_in_or_equal($studentcohortsid, SQL_PARAMS_NAMED, 'pcohort');
-        list($sqlfieldid, $paramsfieldid) = $DB->get_in_or_equal($selecteduserfields, SQL_PARAMS_NAMED, 'pfield');
-
-        return array($sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid);
-    }
-
-    // For admin UI options.
 
     /**
      *
      *
      * @param string $filename
      * @return csv_export_writer
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public static function export_cohorts_to_csv($filename = "") {
         global $DB;
@@ -119,24 +85,18 @@ class manage_cohort_content {
     /**
      *
      *
-     * @return array
+     * @param string $filename
+     * @return string
      * @throws coding_exception
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public static function get_sql_yearone_users_with_empty_data() {
-        list($sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid) = self::get_sql_user_data_parts();
-        // We ignore the sqlcohortid param as we just take A1 as a cohort.
-        $sqlquery = "SELECT DISTINCT
-				u.id, u.username, u.email, u.firstname, u.lastname, c.name, ufd.shortname AS ufdshortname , uid.id AS ufdid
-				FROM {user_info_data} uid
-				LEFT JOIN {user_info_field} ufd ON ufd.id = uid.fieldid
-				LEFT JOIN {user} u ON uid.userid = u.id
-				LEFT JOIN {cohort_members} cm ON cm.userid = u.id
-				LEFT JOIN {cohort} c ON cm.cohortid = c.id
-                WHERE uid.data=\"\" AND c.name = :yearonename AND ufd.id {$sqlfieldid}";
+    public static function print_yearone_users_with_empty_data($filename = "") {
+        $csvexport = self::export_yearone_users_with_empty_data($filename);
 
-        return array($sqlquery, array_merge($paramsfieldid, array('yearonename' => 'A1')));
+        return $csvexport->print_csv_data();
     }
+
+    // For admin UI options.
 
     /**
      *
@@ -144,7 +104,7 @@ class manage_cohort_content {
      * @param string $filename
      * @return csv_export_writer
      * @throws coding_exception
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public static function export_yearone_users_with_empty_data($filename = "") {
         global $DB;
@@ -169,33 +129,76 @@ class manage_cohort_content {
         return $csvexport;
     }
 
+    /**
+     *
+     *
+     * @return array
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public static function get_sql_yearone_users_with_empty_data() {
+        list($sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid) = self::get_sql_user_data_parts();
+        // We ignore the sqlcohortid param as we just take A1 as a cohort.
+        $sqlquery = "SELECT DISTINCT
+				u.id, u.username, u.email, u.firstname, u.lastname, c.name, ufd.shortname AS ufdshortname , uid.id AS ufdid
+				FROM {user_info_data} uid
+				LEFT JOIN {user_info_field} ufd ON ufd.id = uid.fieldid
+				LEFT JOIN {user} u ON uid.userid = u.id
+				LEFT JOIN {cohort_members} cm ON cm.userid = u.id
+				LEFT JOIN {cohort} c ON cm.cohortid = c.id
+                WHERE uid.data=\"\" AND c.name = :yearonename AND ufd.id {$sqlfieldid}";
+
+        return array($sqlquery, array_merge($paramsfieldid, array('yearonename' => 'A1')));
+    }
+
+    /**
+     * Get SQL query to retrieve user info field data for the survey
+     *
+     * @return array
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public static function get_sql_user_data_parts() {
+        global $DB;
+        $studentcohortsid = self::get_survey_cohorts_list();
+        // Select all user fields which are named 'choix...'.
+        $selecteduserfields = $DB->get_fieldset_select('user_info_field', "id", "shortname LIKE 'choix%'");
+        list($sqlcohortid, $paramscohortid) = $DB->get_in_or_equal($studentcohortsid, SQL_PARAMS_NAMED, 'pcohort');
+        list($sqlfieldid, $paramsfieldid) = $DB->get_in_or_equal($selecteduserfields, SQL_PARAMS_NAMED, 'pfield');
+
+        return array($sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid);
+    }
+
     // CLI Tools.
 
     /**
      *
      *
-     * @param string $filename
-     * @return string
-     * @throws \dml_exception
+     * @return array
+     * @throws dml_exception
      */
-    public static function print_export_cohorts($filename = "") {
-        $csvexport = self::export_cohorts_to_csv($filename);
+    public static function get_survey_cohorts_list() {
+        global $CFG;
 
-        return $csvexport->print_csv_data();
+        $studentcohortsid = self::get_master_student_cohort_ids();
+        if (!empty($CFG->additionalstudentcohorts)) {
+            $studentcohortsid = array_merge($studentcohortsid, $CFG->additionalstudentcohorts);
+        }
+
+        return $studentcohortsid;
     }
 
     /**
+     * Get master student cohort ID
      *
-     *
-     * @param string $filename
-     * @return string
-     * @throws coding_exception
-     * @throws \dml_exception
+     * @return array
+     * @throws dml_exception
      */
-    public static function print_yearone_users_with_empty_data($filename = "") {
-        $csvexport = self::export_yearone_users_with_empty_data($filename);
+    public static function get_master_student_cohort_ids() {
+        global $DB;
+        $rexp = $DB->sql_regex() . " '^A[0-9].*$'";
 
-        return $csvexport->print_csv_data();
+        return $DB->get_fieldset_select('cohort', 'id', 'name ' . $rexp);
     }
 
     // Field deletion.
@@ -204,7 +207,7 @@ class manage_cohort_content {
      *
      * Delete all user info data for all involved cohort so we trigger the the form when user first logs in
      *
-     * @throws \dml_transaction_exception
+     * @throws dml_transaction_exception
      */
     public static function delete_user_yearly_surveyinfo() {
         global $DB;
@@ -224,7 +227,7 @@ class manage_cohort_content {
             $selecteduserfields = $DB->get_fieldset_select('user_info_field', "id", "shortname LIKE 'choix%'");
             $allnonstudents = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {cohort_members} WHERE cohortid NOT IN (' .
                 implode(',', $studentcohortsid) . ')');
-            $userdatafield = new \stdClass();
+            $userdatafield = new stdClass();
             foreach ($allnonstudents as $userid) {
                 foreach ($selecteduserfields as $fieldid) {
                     $userdatafield->userid = $userid;

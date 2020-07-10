@@ -24,10 +24,19 @@
  */
 
 namespace tool_enva\csv;
+
+use coding_exception;
+use core\task\manager;
+use dml_exception;
+use dml_transaction_exception;
+use ReflectionClass;
+use stdClass;
+use tool_enva\task\sync_all_course_cohort_enrol;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * This file contains the abstract class to do csv import.
+ * This is the implementation of the cohort importer.
  * Based from lpimportcsv
  *
  * @package    tool_enva
@@ -36,84 +45,230 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohort_sync_importer extends base_csv_importer {
-    protected $cohort_sync_enrol_plugin = null;
-
+    /**
+     * Plugin name
+     */
     const COHORT_SYNC_ENROL_PLUGIN_NAME = 'cohort';
+    /**
+     * Prefix for updated cohort syncs
+     */
     const COHORT_SYNC_ENROL_PREFIX = 'tool_enva:';
+    protected $cohortsyncenrolplugin = null;
+    protected $coursestosync = [];
 
-    public function __construct($text = null, $type = 'tool_enva_cohort_sync_csv_import', $encoding = null, $delimiter = null, $importid = 0,
-        $mappingdata = null, $useprogressbar = false) {
-        parent::__construct($text, $type, $encoding, $delimiter, $importid, $mappingdata, $useprogressbar);
-        $this->cohort_sync_enrol_plugin  = enrol_get_plugin(self::COHORT_SYNC_ENROL_PLUGIN_NAME);
+    /**
+     * Cohort_sync_importer constructor.
+     *
+     * @param null $text
+     * @param null $encoding
+     * @param null $delimiter
+     * @param int $importid
+     * @param string $type
+     * @throws coding_exception
+     */
+    public function __construct($text = null, $encoding = null, $delimiter = null,
+        $importid = 0, $type = 'tool_enva_cohort_sync_csv_import') {
+        parent::__construct($text, $encoding, $delimiter, $importid, $type);
+        $this->cohortsyncenrolplugin = enrol_get_plugin(self::COHORT_SYNC_ENROL_PLUGIN_NAME);
     }
 
     /**
      * Process import. Return false if import should be aborted due to error.
      *
      * @param object $row
+     * @param $rowindex
      * @return bool
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function process_row($row, $rowindex) {
         global $DB;
+        list($course, $cohort, $role) = $this->get_components($row, $rowindex);
+        if (!$course || !$cohort || !$role) {
+            return false;
+        }
+        // Get an enrolment instance if it exists.
+        $instance = $DB->get_record('enrol',
+            array('courseid' => $course->id, 'enrol' => self::COHORT_SYNC_ENROL_PLUGIN_NAME, 'roleid' => $role->id,
+                'customint1' => $cohort->id));
+        // TODO: remove instance when they are disabled.
+        if (!$instance) {
+            $instance = (object) $this->cohortsyncenrolplugin->get_instance_defaults();
+            $instance->id = null;
+            $instance->courseid = $course->id;
+            $instance->roleid = $role->id;
+            $instance->name = self::COHORT_SYNC_ENROL_PREFIX . $cohort->name;
+            $instance->status = ENROL_INSTANCE_ENABLED; // Do not use default for automatically created instances here.
+            $instance->customint1 = $cohort->id;
+            if (!$this->add_instance($course, (array) $instance)) {
+                $this->fail(get_string('importcohortsync:error:cannotaddinstance', 'tool_enva', $rowindex));
+                return false;
+            }
+        } else {
+            $instance->name = self::COHORT_SYNC_ENROL_PREFIX . $cohort->name;
+            if (!$this->update_instance($instance,
+                (object) ['name' => self::COHORT_SYNC_ENROL_PREFIX . $cohort->name,
+                    'status' => ENROL_INSTANCE_ENABLED])) {
+                $this->fail(get_string('importcohortsync:error:cannotupdateinstance', 'tool_enva', $rowindex));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Get all martching components
+     *
+     * @param $row
+     * @param $rowindex
+     * @return array|null
+     * @throws coding_exception
+     */
+    protected function get_components($row, $rowindex) {
         $course = $this->get_course($row);
         if (!$course) {
             $this->fail(get_string('importcohortsync:error:wrongcourse', 'tool_enva', $rowindex));
-            return false;
+            return null;
         }
         $cohort = $this->get_cohort($row);
         if (!$cohort) {
             $this->fail(get_string('importcohortsync:error:wrongcohort', 'tool_enva', $rowindex));
-            return false;
+            return null;
         }
         $role = $this->get_role($row);
         if (!$role) {
             $this->fail(get_string('importcohortsync:error:wrongrole', 'tool_enva', $rowindex));
-            return false;
+            return null;
         }
-        // Get an enrolment instance if it exists
-        $instance = $DB->get_record('enrol',
-            array('courseid' => $course->id, 'enrol' => self::COHORT_SYNC_ENROL_PLUGIN_NAME, 'roleid' => $role->id,
-                'customint1'=> $cohort->id));
-        // TODO: remove instance when they are disabled.
-        if (!$instance) {
-            $instance = (object)$this->cohort_sync_enrol_plugin->get_instance_defaults();
-            $instance->id       = null;
-            $instance->courseid = $course->id;
-            $instance->roleid = $role->id;
-            $instance->name   = self::COHORT_SYNC_ENROL_PREFIX.$cohort->name;
-            $instance->status   = ENROL_INSTANCE_ENABLED; // Do not use default for automatically created instances here.
-            $instance->customint1 = $cohort->id;
-            // This can be a very long process here.
-            $this->cohort_sync_enrol_plugin->add_instance($course, array($instance));
-        } else {
-            // This can be a very long process here, so as we just change the name, we just update the database record.
-            $instance->name = self::COHORT_SYNC_ENROL_PREFIX.$cohort->name;
-            $DB->update_record('enrol', $instance);
-        }
-        return true;
+        return array($course, $cohort, $role);
     }
 
+    /**
+     * Get course
+     *
+     * @param $row
+     * @return bool|false|mixed|stdClass
+     * @throws dml_exception
+     */
     protected function get_course($row) {
         global $DB;
         $courseid = $this->get_column_data($row, 'courseid');
-        return $DB->get_record('cohort', array('id' => $courseid));
+        return $DB->get_record('course', array('id' => $courseid));
     }
 
+    /**
+     * Get cohort
+     *
+     * @param $row
+     * @return bool|false|mixed|stdClass
+     * @throws dml_exception
+     */
     protected function get_cohort($row) {
         global $DB;
         $cohortidnumber = $this->get_column_data($row, 'cohort_idnumber');
         return $DB->get_record('cohort', array('idnumber' => $cohortidnumber));
     }
 
+    /**
+     * Get role
+     *
+     * @param $row
+     * @return bool|false|mixed|stdClass
+     * @throws dml_exception
+     */
     protected function get_role($row) {
         global $DB;
         $roleshortname = $this->get_column_data($row, 'role_shortname');
         return $DB->get_record('role', array('shortname' => $roleshortname));
     }
 
+    /**
+     * Add new instance of enrol plugin.
+     * This a a partial copy of the equivalent for the cohort enrol plugin without
+     * a call to enrol cohort sync. This is making the process too slow, so we do it once
+     * everything is setup.
+     *
+     * @param object $course
+     * @param array $fields instance fields
+     * @return int id of new instance, null if can not be created
+     */
+    protected function add_instance($course, array $fields = null) {
+        global $CFG;
+
+        // Here we just create the new the plugin data. We will course enrolment later.
+        $parentpluginclass = (new ReflectionClass($this->cohortsyncenrolplugin))->getParentClass();
+        $addinstance = $parentpluginclass->getMethod('add_instance');
+        $result =
+            $addinstance->invokeArgs($this->cohortsyncenrolplugin, [$course, $fields]);
+
+        $this->coursestosync[$course->id] = true; // Mak it as to be synced.
+
+        return $result;
+    }
+
+    /**
+     * Update instance of enrol plugin.
+     *
+     * @param object $instance
+     * @param object $data modified instance fields
+     * @return boolean
+     */
+    protected function update_instance($instance, $data) {
+        global $CFG;
+
+        // Here we just update the plugin data. We will course enrolment later.
+        $parentpluginclass = (new ReflectionClass($this->cohortsyncenrolplugin))->getParentClass();
+        $addinstance = $parentpluginclass->getMethod('update_instance');
+        $result =
+            $addinstance->invokeArgs($this->cohortsyncenrolplugin, [$instance, $data]);
+        // We just add the plugin instance.
+        $this->coursestosync[$instance->courseid] = true; // Mak it as to be synced.
+
+        return $result;
+    }
+
+    /**
+     * Validate import. Return false if import should be aborted due to error.
+     *
+     * @param int $rowindex
+     * @param object $row
+     * @return bool
+     */
+    public function validate_row($row, $rowindex) {
+        list($course, $cohort, $role) = $this->get_components($row, $rowindex);
+        if (!$course || !$cohort || !$role) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * List headers
+     *
+     * @return array|string[]
+     */
     public function list_required_headers() {
         return array(
             'courseid', 'cohort_idnumber', 'role_shortname'
         );
+    }
+
+    /**
+     * Finish import process import.
+     *
+     * @param object $row
+     * @return void
+     * @throws dml_transaction_exception
+     */
+    public function end_import_process() {
+        global $DB;
+        $DB->commit_delegated_transaction($this->currenttransaction);
+        // Now launch update for course sync.
+        $cohortsync = new sync_all_course_cohort_enrol();
+        $cohortsync->set_blocking(true);
+        $cohortsync->set_custom_data(array('courses' => array_keys($this->coursestosync)));
+        manager::queue_adhoc_task($cohortsync);
+
     }
 }

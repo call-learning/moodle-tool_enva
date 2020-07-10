@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 use tool_enva\locallib\manage_cohort_content;
+
 global $CFG;
 require_once($CFG->dirroot . '/cohort/lib.php');
 require_once($CFG->dirroot . '/user/profile/lib.php');
@@ -33,6 +34,7 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
 
 /**
  * Class utils_tests
+ *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>

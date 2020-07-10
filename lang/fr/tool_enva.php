@@ -24,11 +24,11 @@
  */
 
 $string['pluginname'] = 'Outils ENVA';
-$string['tool/enva:managecohortcontent'] = 'Peut utiliser les outils ENVA';
 
 // Tools.
 $string['managecohortcontent'] = 'Contenu des cohortes';
-$string['managecohortsync'] = 'Synchronisation des cohortes';
+$string['managecohortsync'] = 'Synchronisation des cohortes et cours';
+$string['managegroupsync'] = 'Synchronisation des groupes dans les cours';
 $string['downloadcohortdata'] = 'Télécharger les Cohortes comme un CSV';
 $string['downloademptysurvey'] = 'Télécharger les étudiants avec une réponse vide à l\'enquête';
 $string['deletesurveyinfo'] = 'Effacer les données d\'enquête';
@@ -36,3 +36,25 @@ $string['deleteyearoneemptysurvey'] = 'Effacer les résultats d\'enquêtes vides
 $string['deletesurveyinfoconfirm'] = 'Confirmer l\'effacement';
 $string['deleteyearoneemptysurveyconfirm'] = 'Confirmer l\'effacement';
 $string['emptyyearonesurveydatatask'] = 'ENVA: Tâche de purge des résultats d\'enquête vides';
+
+$string['groupsyncfile:def'] = 'Fichier de défition des groupes';
+$string['cohortsyncfile:def'] = 'Fichier de défition des synchronisation cohorte';
+$string['tool/enva:managecohortcontent'] = 'Peut gerer le contenu des cohortes';
+$string['tool/enva:managegroupsync'] = 'Peut gérer la synchronisation des groupes';
+$string['tool/enva:managecohortsync'] = 'Peut gérer la synchronisation des cohortes';
+$string['csvdelimiter'] = 'Délimiteur CSV';
+$string['encoding'] = 'Encodage CSV';
+$string['import'] = 'Importation';
+$string['syncallcohortcourses'] = 'Synchronise toutes les cohortes de cours';
+$string['invalidimportfile'] = 'Fichier d\'importation invalide ({$a})';
+$string['headernotpresent'] = 'Entête non présent ({$a})';
+$string['currentimportprogress'] = 'Progression';
+$string['cannotopenimporter'] = 'Ne peux ouvrir l\'outil d\'importation';
+$string['importgroupsync:error:cannotaddinstance'] = 'Ne peux ajouter une instance de groupe (Line:{$a})';
+$string['importgroupsync:error:wrongcourse'] = 'Mauvais cours (Line:{$a})';
+$string['importgroupsync:error:wronggroups'] = 'Mauvais groupe (Line:{$a})';
+$string['importcohortsync:error:cannotaddinstance'] = 'Ne peut ajouter une instance de synchronisation cohorte (Line:{$a})';
+$string['importcohortsync:error:cannotupdateinstance'] = 'Ne peut modifier une instance de synchronisation cohorte (Line:{$a})';
+$string['importcohortsync:error:wrongcourse'] = 'Mauvais cours (Line:{$a})';
+$string['importcohortsync:error:wrongcohort'] = 'Mauvaise cohorte (Line:{$a})';
+$string['importcohortsync:error:wrongrole'] = 'Mauvais role (Line:{$a})';

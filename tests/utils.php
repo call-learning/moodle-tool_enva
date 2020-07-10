@@ -60,12 +60,20 @@ class tool_enva_base_test extends advanced_testcase {
 
         foreach ($evecohorts as $cohort) {
             for ($j = 0; $j < self::USER_PER_COHORT; $j++) { // 10 users in each cohort.
-                $user = $this->getDataGenerator()->create_user();
-                cohort_add_member($cohort->id, $user->id);
+                $user = $this->create_user_in_cohort($cohort->idnumber);
                 $this->users[$i++] = $user;
             }
         }
 
+    }
+
+    protected function create_user_in_cohort($cohortidnumber) {
+        global $DB;
+
+        $user = $this->getDataGenerator()->create_user();
+        $cohort = $DB->get_record('cohort', array('idnumber' => $cohortidnumber));
+        cohort_add_member($cohort->id, $user->id);
+        return $user;
     }
 
     public function tearDown() {

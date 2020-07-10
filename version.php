@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tool_enva';
-$plugin->version = 2019072608;
+$plugin->version = 2019072609;
 $plugin->release = '1.0';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->requires = 2018120305; // Moodle 3.6.

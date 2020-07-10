@@ -24,6 +24,12 @@
  */
 
 namespace tool_enva\csv;
+use coding_exception;
+use csv_import_reader;
+use dml_transaction_exception;
+use progress_bar;
+use Throwable;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -37,60 +43,16 @@ defined('MOODLE_INTERNAL') || die();
  */
 abstract class base_csv_importer {
 
+    const PROGRESS_STEP = 10;
     /** @var string $error The errors message from reading the xml */
     protected $error = '';
-
     /** @var int $importid CSV Import identifier */
     protected $importid;
-
     protected $importtype;
-
+    protected $rowcount = 0;
     /** @var array $header Array of headers (indexed by number so we can then find the column) */
     protected $headers;
-
     protected $currenttransaction = null;
-
-    /**
-     * Store an error message for display later and make sure the current importer is
-     *
-     * @param string $msg
-     */
-    public function fail($msg) {
-        $this->error = $msg;
-        return false;
-    }
-
-    /**
-     * Get the CSV import id
-     *
-     * @return string The import id.
-     */
-    public function get_importid() {
-        return $this->importid;
-    }
-
-    /**
-     * Get the list of headers required for import.
-     *
-     * @return array The headers (lang strings)
-     */
-    public abstract function list_required_headers();
-
-    /**
-     * Get the a column from the imported data.
-     *
-     * @param array The imported raw row
-     * @param $header The name of the column we want data from
-     * @return string|null The column data .
-     */
-    protected function get_column_data($row, $header) {
-        if ($this->headers) {
-            if (($index = array_search($header, $this->headers) !== false)) {
-                return isset($row[$index]) ? $row[$index] : '';
-            }
-        }
-        return null;
-    }
 
     /**
      * Constructor - parses the raw text for sanity.
@@ -99,20 +61,13 @@ abstract class base_csv_importer {
      * @param string $encoding The encoding of the csv file.
      * @param string delimiter The specified delimiter for the file.
      * @param string importid The id of the csv import.
-     * @param array mappingdata The mapping data from the import form.
-     * @param bool $useprogressbar Whether progress bar should be displayed, to avoid html output on CLI.
+     * @param string type the import type
+     * @throws coding_exception
      */
-    public function __construct($text = null, $type = 'tool_enva_csv_import', $encoding = null, $delimiter = null, $importid = 0,
-        $mappingdata = null,
-        $useprogressbar = false) {
+    public function __construct($text = null, $encoding = null, $delimiter = null, $importid = 0, $type = 'tool_enva_csv_import') {
 
         global $CFG, $DB;
 
-        // The format of our records is:
-        // Parent ID number, ID number, Shortname, Description, Description format, Scale values, Scale configuration,
-        // Rule type, Rule outcome, Rule config, Is framework, Taxonomy.
-
-        // The idnumber is concatenated with the category names.
         require_once($CFG->libdir . '/csvlib.class.php');
 
         $this->importtype = $type;
@@ -121,12 +76,12 @@ abstract class base_csv_importer {
             if ($text === null) {
                 return;
             }
-            $this->importid = \csv_import_reader::get_new_iid($type);
+            $this->importid = csv_import_reader::get_new_iid($type);
 
-            $importer = new \csv_import_reader($this->importid, $this->importtype);
+            $importer = new csv_import_reader($this->importid, $this->importtype);
 
             if (!$importer->load_csv_content($text, $encoding, $delimiter)) {
-                $this->fail(get_string('invalidimportfile', 'tool_enva'));
+                $this->fail(get_string('invalidimportfile', 'tool_enva', $importer->get_error()));
                 $importer->cleanup();
                 return;
             }
@@ -134,7 +89,7 @@ abstract class base_csv_importer {
         } else {
             $this->importid = $importid;
 
-            $importer = new \csv_import_reader($this->importid, $type);
+            $importer = new csv_import_reader($this->importid, $type);
         }
 
         if (!$importer->init()) {
@@ -161,20 +116,30 @@ abstract class base_csv_importer {
             }
             $rowindex++;
         }
+        $this->rowcount = $rowindex;
         $importer->close();
     }
 
     /**
-     * Process import. Return false if import should be aborted due to error.
+     * Store an error message for display later and make sure the current importer is
      *
-     * @param int $rowindex
-     * @param object $row
-     * @return bool
+     * @param string $msg
      */
-    public abstract function process_row($row, $rowindex);
+    public function fail($msg) {
+        $this->error = $msg;
+        return false;
+    }
 
     /**
-     * Process import. Return false if import should be aborted due to error.
+     * Get the list of headers required for import.
+     *
+     * @return array The headers (lang strings)
+     */
+    public abstract function list_required_headers();
+
+    /**
+     * Validate import. Return false if import should be aborted due to error.
+     * This method is responsible for calling set_error so we know more about the issue at hand
      *
      * @param int $rowindex
      * @param object $row
@@ -185,19 +150,65 @@ abstract class base_csv_importer {
     }
 
     /**
-     * Cancel import process import.
+     * Get the CSV import id
      *
-     * @param object $row
-     * @return void
-     * @throws \Throwable
-     * @throws \coding_exception
-     * @throws \dml_transaction_exception
+     * @return string The import id.
      */
-    public function cancel_import_process() {
-        global $DB;
-        $DB->rollback_delegated_transaction($this->currenttransaction, new importer_exception(
-            $this->get_error()
-        ));
+    public function get_importid() {
+        return $this->importid;
+    }
+
+    /**
+     * Process import
+     *
+     * @param bool $useprogressbar use progress bar in the import process
+     * @throws Throwable
+     * @throws coding_exception
+     * @throws dml_transaction_exception
+     * @throws importer_exception
+     */
+    public function process_import($useprogressbar = false) {
+        if ($this->error || !$this->importid) {
+            throw new importer_exception($this->get_error());
+        }
+        $importer = new csv_import_reader($this->importid, $this->importtype);
+        $importer->init();
+        $progressbar = null;
+        if ($useprogressbar) {
+            $progressbar = new progress_bar();
+            $progressbar->create();
+        }
+
+        if ($importer) {
+            $this->start_import_process();
+
+            $rowindex = 0;
+            while ($row = $importer->next()) {
+                if (!$this->process_row($row, $rowindex)) {
+                    $this->cancel_import_process();
+                    break;
+                }
+                $rowindex++;
+                if ($progressbar && $rowindex % self::PROGRESS_STEP) {
+                    $progressbar->update($rowindex, $this->rowcount, get_string('currentimportprogress', 'tool_enva'));
+                }
+            }
+            $this->end_import_process();
+            $importer->cleanup();
+            $importer->close();
+        } else {
+            throw new importer_exception(get_string('cannotopenimporter', 'tool_enva'));
+        }
+
+    }
+
+    /**
+     * Get parse errors.
+     *
+     * @return string error from parsing the xml.
+     */
+    public function get_error() {
+        return $this->error;
     }
 
     /**
@@ -212,11 +223,37 @@ abstract class base_csv_importer {
     }
 
     /**
+     * Process import. Return false if import should be aborted due to error.
+     * This method is responsible for calling set_error so we know more about the issue at hand
+     *
+     * @param int $rowindex
+     * @param object $row
+     * @return bool
+     */
+    public abstract function process_row($row, $rowindex);
+
+    /**
+     * Cancel import process import.
+     *
+     * @param object $row
+     * @return void
+     * @throws Throwable
+     * @throws coding_exception
+     * @throws dml_transaction_exception
+     */
+    public function cancel_import_process() {
+        global $DB;
+        $DB->rollback_delegated_transaction($this->currenttransaction, new importer_exception(
+            $this->get_error()
+        ));
+    }
+
+    /**
      * Finish import process import.
      *
      * @param object $row
      * @return void
-     * @throws \dml_transaction_exception
+     * @throws dml_transaction_exception
      */
     public function end_import_process() {
         global $DB;
@@ -224,45 +261,18 @@ abstract class base_csv_importer {
     }
 
     /**
-     * Get parse errors.
+     * Get the a column from the imported data.
      *
-     * @return string error from parsing the xml.
+     * @param array The imported raw row
+     * @param $header The name of the column we want data from
+     * @return string|null The column data .
      */
-    public function get_error() {
-        return $this->error;
-    }
-
-    /**
-     * Process import
-     *
-     * @throws \Throwable
-     * @throws \coding_exception
-     * @throws \dml_transaction_exception
-     * @throws importer_exception
-     */
-    public function process_import() {
-        if ($this->error || !$this->importid) {
-            throw new importer_exception($this->get_error());
-        }
-        $importer = new \csv_import_reader($this->importid, $this->importtype);
-        $importer->init();
-        if ($importer) {
-            $this->start_import_process();
-
-            $rowindex = 0;
-            while ($row = $importer->next()) {
-                if (!$this->process_row($row, $rowindex)) {
-                    $this->cancel_import_process();
-                    break;
-                }
-                $rowindex++;
+    protected function get_column_data($row, $header) {
+        if ($this->headers) {
+            if (($index = array_search($header, $this->headers)) !== false) {
+                return isset($row[$index]) ? $row[$index] : '';
             }
-            $this->end_import_process();
-            $importer->cleanup();
-            $importer->close();
-        } else {
-            throw new importer_exception(get_string('cannotopenimporter', 'tool_enva'));
         }
-
+        return null;
     }
 }
