@@ -211,9 +211,8 @@ class manage_cohort_content {
      */
     public static function delete_user_yearly_surveyinfo() {
         global $DB;
+        $transaction = $DB->start_delegated_transaction();
         try {
-            $transaction = $DB->start_delegated_transaction();
-
             // First : delete all user fields which are named 'choix...'.
             list($sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid) = self::get_sql_user_data_parts();
             $sqlselect = "fieldid {$sqlfieldid}
@@ -247,6 +246,7 @@ class manage_cohort_content {
         } catch (Exception $e) {
             $transaction->rollback($e);
         }
+        $transaction->dispose();
     }
 
     /**
@@ -256,8 +256,8 @@ class manage_cohort_content {
      */
     public static function delete_user_surveyinfo_yearone_when_empty() {
         global $DB;
+        $transaction = $DB->start_delegated_transaction();
         try {
-            $transaction = $DB->start_delegated_transaction();
             // Obviously here we could have done a delete_records_select, but we wanted to use the exact same query
             // as the export function.
             list($sql, $params) = self::get_sql_yearone_users_with_empty_data();
@@ -271,6 +271,7 @@ class manage_cohort_content {
         } catch (moodle_exception $e) {
             $transaction->rollback($e);
         }
+        $transaction->dispose();
     }
 
 }
