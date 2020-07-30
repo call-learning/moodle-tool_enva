@@ -65,7 +65,9 @@ class manage_cohort_content {
      * @throws dml_exception
      */
     public static function export_cohorts_to_csv($filename = "") {
-        global $DB;
+        global $DB, $CFG;
+        require_once($CFG->libdir.'/csvlib.class.php');
+
         $query = "SELECT  u.username, u.lastname, u.firstname, c.name, c.id
 			  FROM {user} u, {cohort} c, {cohort_members} cm
 		      WHERE cm.cohortid = c.id and cm.userid = u.id
@@ -107,7 +109,9 @@ class manage_cohort_content {
      * @throws dml_exception
      */
     public static function export_yearone_users_with_empty_data($filename = "") {
-        global $DB;
+        global $DB, $CFG;
+        require_once($CFG->libdir.'/csvlib.class.php');
+
         list($sql, $params) = self::get_sql_yearone_users_with_empty_data();
         $rs = $DB->get_recordset_sql($sql, $params);
         $csvexport = new csv_export_writer();
