@@ -69,7 +69,7 @@ if (strpos($action, 'delete') === 0) {
 
     } else if ($step == "delete") {
         switch ($action) {
-            case 'deleteusurveyinfo':
+            case 'deletesurveyinfo':
                 manage_cohort_content::delete_user_yearly_surveyinfo();
                 break;
             case 'deleteyearoneemptysurvey':
