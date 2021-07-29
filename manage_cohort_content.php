@@ -25,12 +25,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_enva\locallib\manage_cohort_content;
+use tool_enva\local\manage_cohort_content;
 use tool_enva\output\enva_menus;
 
 define('NO_OUTPUT_BUFFERING', true); // Progress bar is used here.
 
 require(__DIR__ . '/../../../config.php');
+global $PAGE, $CFG, $OUTPUT, $FULLME;
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login(null, false);

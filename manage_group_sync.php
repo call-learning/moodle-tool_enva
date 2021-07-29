@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tools for ENVA
- * Manage course groups
+ * Tools for ENVA - Manage course groups
  *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
@@ -24,10 +23,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_enva\csv\group_sync_importer;
-use tool_enva\forms\group_sync_form;
+use tool_enva\local\csv\group_sync_importer;
+use tool_enva\form\group_sync_form;
 
 require(__DIR__ . '/../../../config.php');
+global $CFG, $PAGE, $OUTPUT, $FULLME;
 require_once($CFG->libdir . '/adminlib.php');
 require_login(null, false);
 

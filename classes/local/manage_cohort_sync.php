@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Manage cohort content
+ * Manage cohort sync
  *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
@@ -23,35 +23,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_enva\csv;
-use moodle_exception;
-
+namespace tool_enva\local;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Exception for the importer
+ * Class manage_cohort_sync
  *
- * @package    tool_enva
  * @copyright  2020 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class importer_exception extends moodle_exception {
-    /**
-     * Constructor
-     *
-     * @param string $detailedmessage
-     * @param string $errorcode The name of the string from error.php to print
-     * @param string $module name of module
-     * @param string $link The url where the user will be prompted to continue. If no url is provided the user will be directed to
-     *     the site index page.
-     * @param mixed $a Extra words and phrases that might be required in the error string
-     * @param string $debuginfo optional debugging information
-     */
-    public function __construct($detailedmessage, $errorcode = 'csvimporterror', $module = 'tool_enva', $link = '', $a = null,
-        $debuginfo = null) {
-        parent::__construct($errorcode, $module = '', $link = '', $a = null, $debuginfo = null);
-        $this->message .= ' - ' . $detailedmessage;
-    }
+class manage_cohort_sync {
 
 }
+

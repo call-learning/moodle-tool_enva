@@ -58,3 +58,4 @@ $string['importcohortsync:error:cannotupdateinstance'] = 'Ne peut modifier une i
 $string['importcohortsync:error:wrongcourse'] = 'Mauvais cours (Line:{$a})';
 $string['importcohortsync:error:wrongcohort'] = 'Mauvaise cohorte (Line:{$a})';
 $string['importcohortsync:error:wrongrole'] = 'Mauvais role (Line:{$a})';
+$string['sync:enrolmentname'] = 'outilenva::{$a->cohortname}({$a->rolename})';

@@ -23,7 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_enva\csv;
+namespace tool_enva\local\csv;
+
 use coding_exception;
 use csv_import_reader;
 use dml_transaction_exception;
@@ -33,8 +34,7 @@ use Throwable;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * This file contains the abstract class to do csv import.
- * Based from lpimportcsv
+ * This file contains the abstract class to do csv import. Based from lpimportcsv
  *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
@@ -42,16 +42,19 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base_csv_importer {
-
+    /** @var $PROGRESS_STEP  */
     const PROGRESS_STEP = 10;
     /** @var string $error The errors message from reading the xml */
     protected $error = '';
     /** @var int $importid CSV Import identifier */
     protected $importid;
+    /** @var int $importtype type of import */
     protected $importtype;
+    /** @var int $rowcount row count */
     protected $rowcount = 0;
     /** @var array $header Array of headers (indexed by number so we can then find the column) */
     protected $headers;
+    /** @var object $currenttransaction */
     protected $currenttransaction = null;
 
     /**
@@ -59,9 +62,9 @@ abstract class base_csv_importer {
      *
      * @param string $text The raw csv text.
      * @param string $encoding The encoding of the csv file.
-     * @param string delimiter The specified delimiter for the file.
-     * @param string importid The id of the csv import.
-     * @param string type the import type
+     * @param string $delimiter The specified delimiter for the file.
+     * @param string $importid The id of the csv import.
+     * @param string $type the import type
      * @throws coding_exception
      */
     public function __construct($text = null, $encoding = null, $delimiter = null, $importid = 0, $type = 'tool_enva_csv_import') {
@@ -135,14 +138,15 @@ abstract class base_csv_importer {
      *
      * @return array The headers (lang strings)
      */
-    public abstract function list_required_headers();
+    abstract public function list_required_headers();
 
     /**
      * Validate import. Return false if import should be aborted due to error.
+     *
      * This method is responsible for calling set_error so we know more about the issue at hand
      *
+     * @param array $row
      * @param int $rowindex
-     * @param object $row
      * @return bool
      */
     public function validate_row($row, $rowindex) {
@@ -214,7 +218,6 @@ abstract class base_csv_importer {
     /**
      * Process before doing import.
      *
-     * @param $row
      * @return void
      */
     public function start_import_process() {
@@ -226,20 +229,16 @@ abstract class base_csv_importer {
      * Process import. Return false if import should be aborted due to error.
      * This method is responsible for calling set_error so we know more about the issue at hand
      *
+     * @param array $row
      * @param int $rowindex
-     * @param object $row
      * @return bool
      */
-    public abstract function process_row($row, $rowindex);
+    abstract public function process_row($row, $rowindex);
 
     /**
      * Cancel import process import.
      *
-     * @param object $row
      * @return void
-     * @throws Throwable
-     * @throws coding_exception
-     * @throws dml_transaction_exception
      */
     public function cancel_import_process() {
         global $DB;
@@ -251,7 +250,6 @@ abstract class base_csv_importer {
     /**
      * Finish import process import.
      *
-     * @param object $row
      * @return void
      * @throws dml_transaction_exception
      */
@@ -263,8 +261,8 @@ abstract class base_csv_importer {
     /**
      * Get the a column from the imported data.
      *
-     * @param array The imported raw row
-     * @param $header The name of the column we want data from
+     * @param array $row The imported raw row
+     * @param string $header The name of the column we want data from
      * @return string|null The column data .
      */
     protected function get_column_data($row, $header) {

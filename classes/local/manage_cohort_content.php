@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_enva\locallib;
+namespace tool_enva\local;
 defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
@@ -42,10 +42,13 @@ use stdClass;
  */
 class manage_cohort_content {
 
+    /**
+     * @var $ENVA_SURVEY_DUMMY_DATA
+     */
     const ENVA_SURVEY_DUMMY_DATA = 'Autre';
 
     /**
-     *
+     * Export cohorts as CSV
      *
      * @param string $filename
      * @return string
@@ -58,7 +61,7 @@ class manage_cohort_content {
     }
 
     /**
-     *
+     * Export cohorts as CSV
      *
      * @param string $filename
      * @return csv_export_writer
@@ -66,7 +69,7 @@ class manage_cohort_content {
      */
     public static function export_cohorts_to_csv($filename = "") {
         global $DB, $CFG;
-        require_once($CFG->libdir.'/csvlib.class.php');
+        require_once($CFG->libdir . '/csvlib.class.php');
 
         $query = "SELECT  u.username, u.lastname, u.firstname, c.name, c.id
 			  FROM {user} u, {cohort} c, {cohort_members} cm
@@ -85,7 +88,7 @@ class manage_cohort_content {
     }
 
     /**
-     *
+     * Export cohorts as CSV, year one with empty data
      *
      * @param string $filename
      * @return string
@@ -101,7 +104,7 @@ class manage_cohort_content {
     // For admin UI options.
 
     /**
-     *
+     * Export cohorts as CSV, year one with empty data
      *
      * @param string $filename
      * @return csv_export_writer
@@ -110,7 +113,7 @@ class manage_cohort_content {
      */
     public static function export_yearone_users_with_empty_data($filename = "") {
         global $DB, $CFG;
-        require_once($CFG->libdir.'/csvlib.class.php');
+        require_once($CFG->libdir . '/csvlib.class.php');
 
         list($sql, $params) = self::get_sql_yearone_users_with_empty_data();
         $rs = $DB->get_recordset_sql($sql, $params);
@@ -134,7 +137,7 @@ class manage_cohort_content {
     }
 
     /**
-     *
+     * Get year one users with empty data
      *
      * @return array
      * @throws coding_exception
@@ -176,7 +179,7 @@ class manage_cohort_content {
     // CLI Tools.
 
     /**
-     *
+     * Get survey cohort list
      *
      * @return array
      * @throws dml_exception
@@ -277,5 +280,4 @@ class manage_cohort_content {
         }
         $transaction->dispose();
     }
-
 }

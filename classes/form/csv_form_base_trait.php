@@ -23,15 +23,28 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_enva\forms;
+namespace tool_enva\form;
 
 defined('MOODLE_INTERNAL') || die();
 
 use core_text;
 use csv_import_reader;
 
+/**
+ * Trait csv_form_base_trait
+ *
+ * @package    tool_enva
+ * @copyright  2020 CALL Learning
+ * @author     Laurent David <laurent@call-learning.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 trait csv_form_base_trait {
 
+    /**
+     * Setup basic definition
+     *
+     * @param string $syncfieldname
+     */
     protected function setup_base_definition($syncfieldname) {
         global $CFG;
         require_once($CFG->libdir . '/csvlib.class.php');

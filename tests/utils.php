@@ -38,9 +38,16 @@ require_once($CFG->dirroot . '/user/profile/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_enva_base_test extends advanced_testcase {
+    /** @var int $USER_PER_COHORT **/
     const USER_PER_COHORT = 10;
+
+    /** @var array $users **/
     public $users = array();
 
+    /**
+     * Setup tests
+     *
+     */
     public function setUp() {
         parent::setUp();
         global $DB;
@@ -67,6 +74,13 @@ class tool_enva_base_test extends advanced_testcase {
 
     }
 
+    /**
+     * Create a user in given cohort
+     *
+     * @param  string $cohortidnumber
+     * @return stdClass
+     * @throws dml_exception
+     */
     protected function create_user_in_cohort($cohortidnumber) {
         global $DB;
 
@@ -76,6 +90,9 @@ class tool_enva_base_test extends advanced_testcase {
         return $user;
     }
 
+    /**
+     * Reset to restart
+     */
     public function tearDown() {
         parent::tearDown();
         $this->users = null;

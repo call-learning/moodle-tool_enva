@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_enva\csv;
+namespace tool_enva\local\csv;
 
 use coding_exception;
 use core\task\manager;
@@ -36,8 +36,7 @@ use tool_enva\task\sync_all_course_cohort_enrol;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * This is the implementation of the cohort importer.
- * Based from lpimportcsv
+ * This is the implementation of the cohort importer. Based from lpimportcsv
  *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
@@ -49,11 +48,14 @@ class cohort_sync_importer extends base_csv_importer {
      * Plugin name
      */
     const COHORT_SYNC_ENROL_PLUGIN_NAME = 'cohort';
+
     /**
-     * Prefix for updated cohort syncs
+     * @var \enrol_plugin|null $cohortsyncenrolplugin
      */
-    const COHORT_SYNC_ENROL_PREFIX = 'tool_enva:';
     protected $cohortsyncenrolplugin = null;
+    /**
+     * @var array $coursestosync course to synchronise
+     */
     protected $coursestosync = [];
 
     /**
@@ -75,8 +77,8 @@ class cohort_sync_importer extends base_csv_importer {
     /**
      * Process import. Return false if import should be aborted due to error.
      *
-     * @param object $row
-     * @param $rowindex
+     * @param array $row
+     * @param int $rowindex
      * @return bool
      * @throws coding_exception
      * @throws dml_exception
@@ -97,17 +99,16 @@ class cohort_sync_importer extends base_csv_importer {
             $instance->id = null;
             $instance->courseid = $course->id;
             $instance->roleid = $role->id;
-            $instance->name = self::COHORT_SYNC_ENROL_PREFIX . $cohort->name;
+            $instance->name = self::create_enrolmnent_name($cohort->name, $role->name);
             $instance->status = ENROL_INSTANCE_ENABLED; // Do not use default for automatically created instances here.
             $instance->customint1 = $cohort->id;
-            if (!$this->add_instance($course, (array) $instance)) {
+            if (!$this->add_enrol_instance($course, (array) $instance)) {
                 $this->fail(get_string('importcohortsync:error:cannotaddinstance', 'tool_enva', $rowindex));
                 return false;
             }
         } else {
-            $instance->name = self::COHORT_SYNC_ENROL_PREFIX . $cohort->name;
-            if (!$this->update_instance($instance,
-                (object) ['name' => self::COHORT_SYNC_ENROL_PREFIX . $cohort->name,
+            if (!$this->update_enrol_instance($instance,
+                (object) ['name' => self::create_enrolmnent_name($cohort->name, $role->name),
                     'status' => ENROL_INSTANCE_ENABLED])) {
                 $this->fail(get_string('importcohortsync:error:cannotupdateinstance', 'tool_enva', $rowindex));
                 return false;
@@ -120,8 +121,8 @@ class cohort_sync_importer extends base_csv_importer {
     /**
      * Get all martching components
      *
-     * @param $row
-     * @param $rowindex
+     * @param array $row
+     * @param int $rowindex
      * @return array|null
      * @throws coding_exception
      */
@@ -147,7 +148,7 @@ class cohort_sync_importer extends base_csv_importer {
     /**
      * Get course
      *
-     * @param $row
+     * @param array $row
      * @return bool|false|mixed|stdClass
      * @throws dml_exception
      */
@@ -160,7 +161,7 @@ class cohort_sync_importer extends base_csv_importer {
     /**
      * Get cohort
      *
-     * @param $row
+     * @param array $row
      * @return bool|false|mixed|stdClass
      * @throws dml_exception
      */
@@ -173,7 +174,7 @@ class cohort_sync_importer extends base_csv_importer {
     /**
      * Get role
      *
-     * @param $row
+     * @param array $row
      * @return bool|false|mixed|stdClass
      * @throws dml_exception
      */
@@ -181,6 +182,17 @@ class cohort_sync_importer extends base_csv_importer {
         global $DB;
         $roleshortname = $this->get_column_data($row, 'role_shortname');
         return $DB->get_record('role', array('shortname' => $roleshortname));
+    }
+
+    /**
+     * Create a human readable name for the enrolment name
+     *
+     * @param string $cohortname
+     * @param string $rolename
+     */
+    public static function create_enrolmnent_name($cohortname, $rolename) {
+        return get_string('sync:enrolmentname', 'tool_enva',
+            (object) (compact('cohortname', 'rolename')));
     }
 
     /**
@@ -193,9 +205,7 @@ class cohort_sync_importer extends base_csv_importer {
      * @param array $fields instance fields
      * @return int id of new instance, null if can not be created
      */
-    protected function add_instance($course, array $fields = null) {
-        global $CFG;
-
+    protected function add_enrol_instance($course, array $fields = null) {
         // Here we just create the new the plugin data. We will course enrolment later.
         $parentpluginclass = (new ReflectionClass($this->cohortsyncenrolplugin))->getParentClass();
         $addinstance = $parentpluginclass->getMethod('add_instance');
@@ -214,9 +224,7 @@ class cohort_sync_importer extends base_csv_importer {
      * @param object $data modified instance fields
      * @return boolean
      */
-    protected function update_instance($instance, $data) {
-        global $CFG;
-
+    protected function update_enrol_instance($instance, $data) {
         // Here we just update the plugin data. We will course enrolment later.
         $parentpluginclass = (new ReflectionClass($this->cohortsyncenrolplugin))->getParentClass();
         $addinstance = $parentpluginclass->getMethod('update_instance');
@@ -231,8 +239,8 @@ class cohort_sync_importer extends base_csv_importer {
     /**
      * Validate import. Return false if import should be aborted due to error.
      *
+     * @param array $row
      * @param int $rowindex
-     * @param object $row
      * @return bool
      */
     public function validate_row($row, $rowindex) {
@@ -257,7 +265,6 @@ class cohort_sync_importer extends base_csv_importer {
     /**
      * Finish import process import.
      *
-     * @param object $row
      * @return void
      * @throws dml_transaction_exception
      */
@@ -269,6 +276,5 @@ class cohort_sync_importer extends base_csv_importer {
         $cohortsync->set_blocking(true);
         $cohortsync->set_custom_data(array('courses' => array_keys($this->coursestosync)));
         manager::queue_adhoc_task($cohortsync);
-
     }
 }

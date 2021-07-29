@@ -23,17 +23,28 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_enva\forms;
+namespace tool_enva\form;
 
 defined('MOODLE_INTERNAL') || die();
 
 use moodleform;
 
-class cohort_sync_form extends moodleform {
+/**
+ * Class group_sync_form
+ *
+ * @package    tool_enva
+ * @copyright  2020 CALL Learning
+ * @author     Laurent David <laurent@call-learning.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class group_sync_form extends moodleform {
 
     use csv_form_base_trait;
 
+    /**
+     * Definition of the form
+     */
     protected function definition() {
-        $this->setup_base_definition('cohortsyncfile');
+        $this->setup_base_definition('groupsyncfile');
     }
 }

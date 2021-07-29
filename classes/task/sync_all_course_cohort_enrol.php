@@ -15,21 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tools for ENVA
- * Empty survey data regular job
+ * Tools for ENVA - Sync all cohorts
  *
  * @package    tool_enva
- * @copyright  2019 Laurent David <laurent@call-learning.fr>
+ * @copyright  2021 Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_enva\task;
-
-use core\task\adhoc_task;
-use null_progress_trace;
-
 defined('MOODLE_INTERNAL') || die();
 
+use core\task\adhoc_task;
+use moodle_exception;
+use null_progress_trace;
+
+/**
+ * Class sync_all_course_cohort_enrol
+ *
+ * @package    tool_enva
+ * @copyright  2021 Laurent David <laurent@call-learning.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class sync_all_course_cohort_enrol extends adhoc_task {
     /**
      * Get a descriptive name for this task (shown to admins).
@@ -45,18 +51,24 @@ class sync_all_course_cohort_enrol extends adhoc_task {
      * Throw exceptions on errors (the job will be retried).
      */
     public function execute() {
-        global $CFG;
+        global $CFG, $DB;
         $data = $this->get_custom_data();
         require_once("$CFG->dirroot/enrol/cohort/locallib.php");
 
         if ($data && !empty($data->courses)) {
-            foreach ($data->courses as $courseid) {
-                $trace = new null_progress_trace();
-                enrol_cohort_sync($trace, $courseid);
-                $trace->finished();
+            $transaction = $DB->start_delegated_transaction();
+            try {
+                foreach ($data->courses as $courseid) {
+                    $trace = new null_progress_trace();
+                    enrol_cohort_sync($trace, $courseid);
+
+                    $trace->finished();
+                }
+                $transaction->allow_commit();
+            } catch (moodle_exception $e) {
+                $transaction->rollback($e);
             }
+            $transaction->dispose();
         }
-
     }
-
 }

@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tools for ENVA
- * Empty survey data regular job
+ * Tools for ENVA - Empty survey data regular job
  *
  * @package    tool_enva
  * @copyright  2019 Laurent David <laurent@call-learning.fr>
@@ -26,10 +25,17 @@
 namespace tool_enva\task;
 
 use core\task\scheduled_task;
-use tool_enva\locallib\manage_cohort_content;
+use tool_enva\local\manage_cohort_content;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Class empty_yearone_survey_data
+ *
+ * @package    tool_enva
+ * @copyright  2019 Laurent David <laurent@call-learning.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class empty_yearone_survey_data extends scheduled_task {
     /**
      * Get a descriptive name for this task (shown to admins).

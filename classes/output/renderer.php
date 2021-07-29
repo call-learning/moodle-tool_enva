@@ -36,6 +36,7 @@ class renderer extends plugin_renderer_base {
     /**
      * Renders enva tool menu
      *
+     * @param enva_menus $menu
      * @return string HTML
      */
     protected function render_enva_menus(enva_menus $menu) {

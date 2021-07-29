@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Manage cohort sync
+ * Tools for ENVA
  *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
@@ -23,17 +23,28 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_enva\locallib;
+namespace tool_enva\form;
+
 defined('MOODLE_INTERNAL') || die();
 
+use moodleform;
+
 /**
- * Class manage_cohort_sync
+ * Class cohort_sync_form
  *
+ * @package    tool_enva
  * @copyright  2020 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class manage_cohort_sync {
+class cohort_sync_form extends moodleform {
 
+    use csv_form_base_trait;
+
+    /**
+     * Form definition
+     */
+    protected function definition() {
+        $this->setup_base_definition('cohortsyncfile');
+    }
 }
-

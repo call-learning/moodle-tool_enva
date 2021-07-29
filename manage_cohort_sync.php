@@ -25,10 +25,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_enva\csv\cohort_sync_importer;
-use tool_enva\forms\cohort_sync_form;
+use tool_enva\local\csv\cohort_sync_importer;
+use tool_enva\form\cohort_sync_form;
 
 require(__DIR__ . '/../../../config.php');
+global $PAGE, $CFG, $OUTPUT, $FULLME;
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login(null, false);

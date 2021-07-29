@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use tool_enva\locallib\manage_cohort_content;
+use tool_enva\local\manage_cohort_content;
 
 global $CFG;
 require_once($CFG->dirroot . '/cohort/lib.php');
@@ -40,9 +40,11 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_enva_tests extends tool_enva_base_test {
+class tool_enva_test extends tool_enva_base_test {
+    /**
+     * Test deletion of survey info
+     */
     public function test_delete_user_surveyinfo() {
-        global $DB;
         $this->resetAfterTest(true);
         $useryearone = $this->users[0];
         $useryeartwo = $this->users[self::USER_PER_COHORT];
@@ -82,6 +84,13 @@ class tool_enva_tests extends tool_enva_base_test {
 
     }
 
+    /**
+     * Set user profile fields
+     *
+     * @param object $user
+     * @param string $fieldvalue
+     * @throws dml_exception
+     */
     protected function set_user_profile_field($user, $fieldvalue) {
         static $evecustomprofilefields = null;
         if (!$evecustomprofilefields) {
@@ -96,6 +105,9 @@ class tool_enva_tests extends tool_enva_base_test {
         }
     }
 
+    /**
+     * Test that we delete the survey info when empty (as string empty)
+     */
     public function test_delete_user_surveyinfo_yearone_when_empty() {
         $this->resetAfterTest(true);
         $useryearone = $this->users[0];

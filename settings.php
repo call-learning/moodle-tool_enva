@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    global $ADMIN;
+    global $ADMIN, $CFG;
 
     $envatools = new admin_category(
         'tool_enva',

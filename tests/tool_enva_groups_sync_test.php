@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
-use tool_enva\csv\group_sync_importer;
+use tool_enva\local\csv\group_sync_importer;
 
 require_once($CFG->dirroot . '/cohort/lib.php');
 require_once($CFG->dirroot . '/user/profile/lib.php');
@@ -55,45 +55,46 @@ class tool_enva_groups_sync_test extends tool_enva_base_test {
         $c502groups = array_values(array_map(function($g) {
             return $g->name;
         }, groups_get_all_groups(502)));
-
-        $this->assertArraySubset(
-            ["A1Gr4.1",
-                "A1Gr4.2",
-                "A1Gr4.3",
-                "A1Gr4.4",
-                "A1Gr8.1",
-                "A1Gr8.2",
-                "A1Gr8.3",
-                "A1Gr8.4",
-                "A1Gr8.5",
-                "A1Gr8.6",
-                "A1Gr8.7",
-                "A1Gr8.8"], $c502groups
-        );
+        foreach (["A1Gr4.1",
+            "A1Gr4.2",
+            "A1Gr4.3",
+            "A1Gr4.4",
+            "A1Gr8.1",
+            "A1Gr8.2",
+            "A1Gr8.3",
+            "A1Gr8.4",
+            "A1Gr8.5",
+            "A1Gr8.6",
+            "A1Gr8.7",
+            "A1Gr8.8"] as $key => $value) {
+            $this->assertArrayHasKey($key, $c502groups);
+            $this->assertSame($value, $c502groups[$key]);
+        }
 
         $c604groups = array_values(array_map(function($g) {
             return $g->name;
         }, groups_get_all_groups(604)));
-        $this->assertArraySubset(
-            ["A3Gr4.1",
-                "A3Gr4.2",
-                "A3Gr4.3",
-                "A3Gr4.4",
-                "A3Gr8.1",
-                "A3Gr8.2",
-                "A3Gr8.3",
-                "A3Gr8.4",
-                "A3Gr8.5",
-                "A3Gr8.6",
-                "A3Gr8.7",
-                "A3Gr8.8",
-            ], $c604groups
-        );
+
+        foreach (["A3Gr4.1",
+            "A3Gr4.2",
+            "A3Gr4.3",
+            "A3Gr4.4",
+            "A3Gr8.1",
+            "A3Gr8.2",
+            "A3Gr8.3",
+            "A3Gr8.4",
+            "A3Gr8.5",
+            "A3Gr8.6",
+            "A3Gr8.7",
+            "A3Gr8.8",
+        ] as $key => $value) {
+            $this->assertArrayHasKey($key, $c604groups);
+            $this->assertSame($value, $c604groups[$key]);
+        }
 
     }
 
     public function test_csv_import_purged() {
-        global $DB;
         $this->resetAfterTest(true);
 
         // Create existing groups.

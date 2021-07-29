@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_enva\csv;
+namespace tool_enva\local\csv;
 
 use coding_exception;
 use dml_exception;
@@ -32,8 +32,7 @@ use stdClass;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * This is the implementation of the group importer.
- * Based from lpimportcsv
+ * This is the implementation of the group importer. Based from lpimportcsv
  *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
@@ -50,17 +49,19 @@ class group_sync_importer extends base_csv_importer {
     /**
      * Process import. Return false if import should be aborted due to error.
      *
-     * @param object $row
-     * @param $rowindex
+     * @param array $row
+     * @param int $rowindex
      * @return bool
      * @throws coding_exception
      * @throws dml_exception
      */
     public function process_row($row, $rowindex) {
-        global $DB;
         list($course, $groups) = $this->get_components($row, $rowindex);
-        if (!$course || !$groups) {
+        if (!$course) {
             return false;
+        }
+        if (!$groups) {
+            return true; // No group. We carry on.
         }
         // Purge all groups from the course if specified.
         $shouldpurge = $this->get_column_data($row, 'purge_groups');
@@ -84,8 +85,8 @@ class group_sync_importer extends base_csv_importer {
     /**
      * Get all matching components
      *
-     * @param $row
-     * @param $rowindex
+     * @param array $row
+     * @param int $rowindex
      * @return array|null
      * @throws coding_exception
      */
@@ -96,17 +97,13 @@ class group_sync_importer extends base_csv_importer {
             return null;
         }
         $groups = $this->get_groups($row);
-        if (!$groups) {
-            $this->fail(get_string('importgroupsync:error:wronggroups', 'tool_enva', $rowindex));
-            return null;
-        }
         return array($course, $groups);
     }
 
     /**
      * Get course
      *
-     * @param $row
+     * @param object $row
      * @return bool|false|mixed|stdClass
      * @throws dml_exception
      */
@@ -119,12 +116,11 @@ class group_sync_importer extends base_csv_importer {
     /**
      * Get groups
      *
-     * @param $row
+     * @param array $row
      * @return bool|false|mixed|stdClass
      * @throws dml_exception
      */
     protected function get_groups($row) {
-        global $DB;
         $grouplist = $this->get_column_data($row, 'groups');
         if ($grouplist) {
             $groups = explode(',', $grouplist);
@@ -136,10 +132,9 @@ class group_sync_importer extends base_csv_importer {
     /**
      * Validate import. Return false if import should be aborted due to error.
      *
+     * @param array $row
      * @param int $rowindex
-     * @param object $row
      * @return bool
-     * @throws coding_exception
      */
     public function validate_row($row, $rowindex) {
         list($course, $groups) = $this->get_components($row, $rowindex);
@@ -156,7 +151,7 @@ class group_sync_importer extends base_csv_importer {
      */
     public function list_required_headers() {
         return array(
-            'courseid', 'course_shortname', 'groups'
+            'courseid', 'groups'
         );
     }
 
