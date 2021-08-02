@@ -25,7 +25,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_enva\local\manage_cohort_content;
+use tool_enva\local\manage_survey;
 use tool_enva\output\enva_menus;
 
 define('NO_OUTPUT_BUFFERING', true); // Progress bar is used here.
@@ -42,15 +42,9 @@ $step = optional_param('step', "", PARAM_ALPHA);
 admin_externalpage_setup('enva_manage_cohortcontent');
 // Pre-output actions.
 switch ($action) {
-    case 'downloadcohortdata':
-        require_sesskey();
-        $csvexport = manage_cohort_content::export_cohorts_to_csv();
-        $csvexport->download_file();
-        exit;
-        break;
     case 'downloademptysurvey':
         require_sesskey();
-        $csvexport = manage_cohort_content::export_yearone_users_with_empty_data();
+        $csvexport = manage_survey::export_yearone_users_with_empty_data();
         $csvexport->download_file();
         exit;
 }
@@ -58,7 +52,7 @@ switch ($action) {
 $output = $PAGE->get_renderer('tool_enva');
 // Output starts here.
 echo $output->header();
-echo $output->heading(get_string('managecohortcontent', 'tool_enva'));
+echo $output->heading(get_string('managesurvey', 'tool_enva'));
 if (strpos($action, 'delete') === 0) {
     require_sesskey();
     if (!$step) {
@@ -71,10 +65,10 @@ if (strpos($action, 'delete') === 0) {
     } else if ($step == "delete") {
         switch ($action) {
             case 'deletesurveyinfo':
-                manage_cohort_content::delete_user_yearly_surveyinfo();
+                manage_survey::delete_user_yearly_surveyinfo();
                 break;
             case 'deleteyearoneemptysurvey':
-                manage_cohort_content::delete_user_surveyinfo_yearone_when_empty();
+                manage_survey::delete_user_surveyinfo_yearone_when_empty();
                 break;
         }
         echo get_string('success');

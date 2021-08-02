@@ -26,10 +26,9 @@
 $string['pluginname'] = 'Outils ENVA';
 
 // Tools.
-$string['managecohortcontent'] = 'Contenu des cohortes';
+$string['managesurvey'] = 'Outils divers';
 $string['managecohortsync'] = 'Synchronisation des cohortes et cours';
 $string['managegroupsync'] = 'Synchronisation des groupes dans les cours';
-$string['downloadcohortdata'] = 'Télécharger les Cohortes comme un CSV';
 $string['downloademptysurvey'] = 'Télécharger les étudiants avec une réponse vide à l\'enquête';
 $string['deletesurveyinfo'] = 'Effacer les données d\'enquête';
 $string['deleteyearoneemptysurvey'] = 'Effacer les résultats d\'enquêtes vides (année 1)';
@@ -39,7 +38,7 @@ $string['emptyyearonesurveydatatask'] = 'ENVA: Tâche de purge des résultats d\
 
 $string['groupsyncfile:def'] = 'Fichier de défition des groupes';
 $string['cohortsyncfile:def'] = 'Fichier de défition des synchronisation cohorte';
-$string['tool/enva:managecohortcontent'] = 'Peut gerer le contenu des cohortes';
+$string['tool/enva:managesurvey'] = 'Peut gerer les outils divers';
 $string['tool/enva:managegroupsync'] = 'Peut gérer la synchronisation des groupes';
 $string['tool/enva:managecohortsync'] = 'Peut gérer la synchronisation des cohortes';
 $string['csvdelimiter'] = 'Délimiteur CSV';
@@ -58,4 +57,9 @@ $string['importcohortsync:error:cannotupdateinstance'] = 'Ne peut modifier une i
 $string['importcohortsync:error:wrongcourse'] = 'Mauvais cours (Line:{$a})';
 $string['importcohortsync:error:wrongcohort'] = 'Mauvaise cohorte (Line:{$a})';
 $string['importcohortsync:error:wrongrole'] = 'Mauvais role (Line:{$a})';
+$string['messageprovider:syncfinished'] = 'Synchronisation des cohortes terminée';
+$string['settings:additionalstudentcohorts'] = 'Cohortes additionnelles pour les questionnaires avenir professionnel';
+$string['settings:additionalstudentcohorts_help'] = 'Identifiants numériques séparés par des virgules qui permettent de rajouter
+des cohortes à l\'ensemble des cohortes concernées par les questionnaires avenir professionnel';
 $string['sync:enrolmentname'] = 'outilenva::{$a->cohortname}({$a->rolename})';
+$string['surveyparameters'] = 'Paramètres questionnaire avenir professionnel';

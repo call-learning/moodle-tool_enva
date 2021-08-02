@@ -26,10 +26,9 @@
 $string['pluginname'] = 'ENVA Utils/Tools';
 
 // Tools.
-$string['managecohortcontent'] = 'Cohort content';
+$string['managesurvey'] = 'Cohort content';
 $string['managecohortsync'] = 'Cohort Course Synchronisation';
 $string['managegroupsync'] = 'Group Course Synchronisation';
-$string['downloadcohortdata'] = 'Download Cohorts as CSV';
 $string['downloademptysurvey'] = 'Download Student with empty survey data';
 $string['deletesurveyinfo'] = 'Delete Survey Data';
 $string['deleteyearoneemptysurvey'] = 'Delete empty year one survey';
@@ -39,7 +38,7 @@ $string['emptyyearonesurveydatatask'] = 'ENVA: Delete empty survey data Task';
 
 $string['groupsyncfile:def'] = 'Group definition file';
 $string['cohortsyncfile:def'] = 'Cohort sync definition file';
-$string['tool/enva:managecohortcontent'] = 'Can manage cohort content';
+$string['tool/enva:managesurvey'] = 'Can manage cohort content';
 $string['tool/enva:managecohortsync'] = 'Can manage cohort synchronisation';
 $string['tool/enva:managegroupsync'] = 'Can manage group synchronisation';
 $string['csvdelimiter'] = 'CSV Delimiter';
@@ -57,4 +56,14 @@ $string['importcohortsync:error:cannotupdateinstance'] = 'Cannot update cohort s
 $string['importcohortsync:error:wrongcourse'] = 'Wrong course (Line:{$a})';
 $string['importcohortsync:error:wrongcohort'] = 'Wrong cohort (Line:{$a})';
 $string['importcohortsync:error:wrongrole'] = 'Wrong role (Line:{$a})';
+$string['messageprovider:syncfinished'] = 'Synchronisation of cohorts finished';
+$string['message:syncallcohortfailed:title'] = 'Synchronising all cohort failed';
+$string['message:syncallcohortfailed'] = 'The process of synchronising all cohort failed. Please
+check the output of php enrol/cohort/cli/sync.php. {$a->error} - ({$a->trace})';
+$string['message:syncallcohortok:title'] = 'Synchronising all cohort succeed.';
+$string['message:syncallcohortok'] = 'The process of synchronising all cohort was a success.';
+$string['settings:additionalstudentcohorts'] = 'Additionnal cohort for survey';
+$string['settings:additionalstudentcohorts_help'] = 'Numerical ID separated by comma, which allow additional cohort to be considered
+when managing the entry survey';
 $string['sync:enrolmentname'] = 'toolenva::{$a->cohortname}({$a->rolename})';
+$string['surveyparameters'] = 'Survey parameters';

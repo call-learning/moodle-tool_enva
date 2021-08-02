@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tools for ENVA
+ * Defines the message sent by this provider.
  *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
@@ -24,9 +24,13 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'tool_enva';
-$plugin->version = 2021020802;
-$plugin->release = '1.1';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2018120305; // Moodle 3.6.
+$messageproviders = array(
+    // Notify admin when synchronisation is done.
+    'syncfinished' => array(
+        'capability' => 'tool/enva:managecohortsync',
+        'defaults' => array(
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
+            'email' => MESSAGE_PERMITTED
+        ),
+    ),
+);

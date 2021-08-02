@@ -50,13 +50,9 @@ class enva_menus implements renderable {
      * @throws moodle_exception
      */
     public function export_for_template(renderer_base $output) {
-        global $CFG, $PAGE;
+        global $PAGE;
         $rooturl = $PAGE->url->out_omit_querystring();
         return [
-            (object) [
-                'url' => new moodle_url($rooturl, array('action' => 'downloadcohortdata')),
-                'title' => get_string('downloadcohortdata', 'tool_enva'),
-            ],
             (object) [
                 'url' => new moodle_url($rooturl, array('action' => 'downloademptysurvey')),
                 'title' => get_string('downloademptysurvey', 'tool_enva'),

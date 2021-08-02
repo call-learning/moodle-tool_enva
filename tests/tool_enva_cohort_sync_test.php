@@ -44,6 +44,7 @@ class tool_enva_cohort_sync_test extends tool_enva_base_test {
     public function test_csv_import_simple() {
         global $DB;
         $this->resetAfterTest(true);
+        $messagesink = $this->redirectMessages();
 
         // Create three test users before we do the import.
         // We expect them not to be enrolled until we trigger the adhoc task.
@@ -117,6 +118,10 @@ class tool_enva_cohort_sync_test extends tool_enva_base_test {
             $usera2->id,
             $studentguestrole->id,
             $contextcourse502->id));
+        $this->assertEquals(1, $messagesink->count());
+        $firstmessage = $messagesink->get_messages()[0];
+        $this->assertEquals(get_string('message:syncallcohortok:title', 'tool_enva'),
+            $firstmessage->subject);
     }
 }
 

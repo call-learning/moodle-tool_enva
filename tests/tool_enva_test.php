@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use tool_enva\local\manage_cohort_content;
+use tool_enva\local\manage_survey;
 
 global $CFG;
 require_once($CFG->dirroot . '/cohort/lib.php');
@@ -69,7 +69,7 @@ class tool_enva_test extends tool_enva_base_test {
             'choix3' => 'Autre'
         ));
 
-        manage_cohort_content::delete_user_yearly_surveyinfo();
+        manage_survey::delete_user_yearly_surveyinfo();
 
         $useryearonefields = profile_get_user_fields_with_data($useryearone->id);
         $useryeartwofields = profile_get_user_fields_with_data($useryeartwo->id);
@@ -140,7 +140,7 @@ class tool_enva_test extends tool_enva_base_test {
             'choix3' => 'Autre'
         ));
 
-        manage_cohort_content::delete_user_surveyinfo_yearone_when_empty();
+        manage_survey::delete_user_surveyinfo_yearone_when_empty();
 
         $useryearonefields = profile_get_user_fields_with_data($useryearone->id);
         $useryearonewithresponsefields = profile_get_user_fields_with_data($useryearonewithresponse->id);

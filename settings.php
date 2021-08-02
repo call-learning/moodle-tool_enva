@@ -32,11 +32,31 @@ if ($hassiteconfig) {
         'tool_enva',
         get_string('pluginname', 'tool_enva')
     );
+
+    // Manage survey parameters.
+    $surveypage = new admin_settingpage(
+        'envasurvey',
+        get_string('surveyparameters', 'tool_enva'),
+        'tool/enva:managesurvey');
+    $envatools->add('tool_enva', $surveypage);
+
+    // Replacement and patterns for group name (see preg_replace).
+    $surveypage->add(
+        new admin_setting_configtext(
+            'tool_enva/additionalstudentcohorts',
+            get_string('settings:additionalstudentcohorts', 'tool_enva'), // Label.
+            get_string('settings:additionalstudentcohorts_help', 'tool_enva'), // Help.
+            //  28 = Promo Thésards.
+            //  6,24,25,26 = Mobilité.
+            '6,28,24,25,26',
+            PARAM_RAW
+        ));
+
     $envatools->add('tool_enva', new admin_externalpage(
             'enva_manage_cohortcontent',
-            get_string('managecohortcontent', 'tool_enva'),
-            "$CFG->wwwroot/$CFG->admin/tool/enva/manage_cohort_content.php",
-            'tool/enva:managecohortcontent'
+            get_string('managesurvey', 'tool_enva'),
+            "$CFG->wwwroot/$CFG->admin/tool/enva/manage_survey.php",
+            'tool/enva:managesurvey'
         )
     );
 

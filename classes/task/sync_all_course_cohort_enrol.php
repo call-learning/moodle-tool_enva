@@ -61,14 +61,47 @@ class sync_all_course_cohort_enrol extends adhoc_task {
                 foreach ($data->courses as $courseid) {
                     $trace = new null_progress_trace();
                     enrol_cohort_sync($trace, $courseid);
-
                     $trace->finished();
                 }
                 $transaction->allow_commit();
+                // Send an email to the admin.
+                self::send_admin_message(
+                    get_string('message:syncallcohortok:title', 'tool_enva'),
+                    get_string('message:syncallcohortok', 'tool_enva'));
             } catch (moodle_exception $e) {
+                self::send_admin_message(
+                    get_string('message:syncallcohortfailed:title', 'tool_enva'),
+                    get_string('message:syncallcohortfailed', 'tool_enva',
+                        (object) ['error', $e->getMessage(), 'trace' => $e->getTraceAsString()]));
                 $transaction->rollback($e);
             }
             $transaction->dispose();
+        }
+    }
+
+    /**
+     * Send a message to the admin when finished.
+     *
+     * @param string $subject
+     * @param string $fullmessage
+     * @throws \coding_exception
+     */
+    protected static function send_admin_message($subject, $fullmessage) {
+        $admins = get_admins();
+        foreach ($admins as $admin) {
+            // Prepare the message.
+            $eventdata = new \core\message\message();
+            $eventdata->component = 'tool_enva';
+            $eventdata->name = 'syncfinished';
+            $eventdata->notification = 1;
+            $eventdata->courseid = SITEID;
+            $eventdata->userfrom = \core_user::get_support_user();
+            $eventdata->userto = $admin;
+            $eventdata->subject = $subject;
+            $eventdata->fullmessage = $fullmessage;
+            $eventdata->fullmessageformat = FORMAT_PLAIN;
+            $eventdata->fullmessagehtml = \html_writer::span($fullmessage);
+            message_send($eventdata);
         }
     }
 }

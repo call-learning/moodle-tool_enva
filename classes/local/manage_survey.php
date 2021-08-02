@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Manage cohort content
+ * Manage survey
  *
  * @package    tool_enva
  * @copyright  2020 CALL Learning
@@ -34,58 +34,18 @@ use moodle_exception;
 use stdClass;
 
 /**
- * Class manage_cohort_content
+ * Class manage_survey
  *
  * @copyright  2020 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class manage_cohort_content {
+class manage_survey {
 
     /**
      * @var $ENVA_SURVEY_DUMMY_DATA
      */
     const ENVA_SURVEY_DUMMY_DATA = 'Autre';
-
-    /**
-     * Export cohorts as CSV
-     *
-     * @param string $filename
-     * @return string
-     * @throws dml_exception
-     */
-    public static function print_export_cohorts($filename = "") {
-        $csvexport = self::export_cohorts_to_csv($filename);
-
-        return $csvexport->print_csv_data();
-    }
-
-    /**
-     * Export cohorts as CSV
-     *
-     * @param string $filename
-     * @return csv_export_writer
-     * @throws dml_exception
-     */
-    public static function export_cohorts_to_csv($filename = "") {
-        global $DB, $CFG;
-        require_once($CFG->libdir . '/csvlib.class.php');
-
-        $query = "SELECT  u.username, u.lastname, u.firstname, c.name, c.id
-			  FROM {user} u, {cohort} c, {cohort_members} cm
-		      WHERE cm.cohortid = c.id and cm.userid = u.id
-		      ORDER BY c.id";
-
-        $rs = $DB->get_recordset_sql($query);
-        $csvexport = new csv_export_writer();
-        $csvexport->set_filename($filename ? $filename : 'cohorts.csv');
-        $csvexport->add_data(array('username', 'lastname', 'firstname', 'cohort', 'cohortid'));
-        foreach ($rs as $res) {
-            $csvexport->add_data((array) $res);
-        }
-
-        return $csvexport;
-    }
 
     /**
      * Export cohorts as CSV, year one with empty data
@@ -185,13 +145,19 @@ class manage_cohort_content {
      * @throws dml_exception
      */
     public static function get_survey_cohorts_list() {
-        global $CFG;
 
         $studentcohortsid = self::get_master_student_cohort_ids();
-        if (!empty($CFG->additionalstudentcohorts)) {
-            $studentcohortsid = array_merge($studentcohortsid, $CFG->additionalstudentcohorts);
+        $studentcohortsid = array_map(function($cid) {
+            return intval(trim($cid));
+        }, $studentcohortsid);
+        $additionalstudentcohorts = get_config('tool_enva', 'additionalstudentcohorts');
+        if (!empty($additionalstudentcohorts)) {
+            $additionalstudentcohorts = explode(',', $additionalstudentcohorts);
+            $additionalstudentcohorts = array_map(function($cid) {
+                return intval(trim($cid));
+            }, $additionalstudentcohorts);
+            $studentcohortsid = array_merge($studentcohortsid, $additionalstudentcohorts);
         }
-
         return $studentcohortsid;
     }
 
@@ -250,7 +216,8 @@ class manage_cohort_content {
                 }
             }
             $transaction->allow_commit();
-        } catch (Exception $e) {
+        } catch (moodle_exception $e) {
+            debug($e->getMessage() . '-'. $e->getTraceAsString());
             $transaction->rollback($e);
         }
         $transaction->dispose();

@@ -25,7 +25,7 @@
 namespace tool_enva\task;
 
 use core\task\scheduled_task;
-use tool_enva\local\manage_cohort_content;
+use tool_enva\local\manage_survey;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -51,7 +51,7 @@ class empty_yearone_survey_data extends scheduled_task {
      * Throw exceptions on errors (the job will be retried).
      */
     public function execute() {
-        manage_cohort_content::delete_user_surveyinfo_yearone_when_empty();
+        manage_survey::delete_user_surveyinfo_yearone_when_empty();
     }
 
 }
