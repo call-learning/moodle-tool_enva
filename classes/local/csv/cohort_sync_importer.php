@@ -90,10 +90,23 @@ class cohort_sync_importer extends base_csv_importer {
             return false;
         }
         // Get an enrolment instance if it exists.
-        $instance = $DB->get_record('enrol',
-            array('courseid' => $course->id, 'enrol' => self::COHORT_SYNC_ENROL_PLUGIN_NAME, 'roleid' => $role->id,
+        $instances = $DB->get_records('enrol',
+            array('courseid' => $course->id,
+                'enrol' => self::COHORT_SYNC_ENROL_PLUGIN_NAME,
+                'roleid' => $role->id,
                 'customint1' => $cohort->id));
-        // TODO: remove instance when they are disabled.
+        // Case we have several instances with the same cohort sync.
+        // We disable all of them and we will work with the last one.
+        if ($instances && count($instances) > 1) {
+            foreach ($instances as $inst) {
+                $this->update_enrol_instance($inst,
+                    (object) ['name' => self::create_enrolmnent_name($cohort->name, $role->name),
+                        'status' => ENROL_INSTANCE_DISABLED]);
+                $instance = $inst;
+            }
+        } else {
+            $instance = $instances ? end($instances) : null;
+        }
         if (!$instance) {
             $instance = (object) $this->cohortsyncenrolplugin->get_instance_defaults();
             $instance->id = null;
@@ -197,7 +210,7 @@ class cohort_sync_importer extends base_csv_importer {
 
     /**
      * Add new instance of enrol plugin.
-     * This a a partial copy of the equivalent for the cohort enrol plugin without
+     * This a partial copy of the equivalent for the cohort enrol plugin without
      * a call to enrol cohort sync. This is making the process too slow, so we do it once
      * everything is setup.
      *

@@ -37,7 +37,12 @@ $string['deleteyearoneemptysurveyconfirm'] = 'Confirmer l\'effacement';
 $string['emptyyearonesurveydatatask'] = 'ENVA: Tâche de purge des résultats d\'enquête vides';
 
 $string['groupsyncfile:def'] = 'Fichier de défition des groupes';
+$string['groupsyncfile:def_help'] = 'Fichier de défition des synchronisation, doit contenir la correspondance entre un course et
+ un ensemble de groupes. 2 colunnes à minima: courseid, groups. Groups contient une liste séparée par une virgule, contenant
+ les groupes qui doivent être créés dans ce cours';
 $string['cohortsyncfile:def'] = 'Fichier de défition des synchronisation cohorte';
+$string['cohortsyncfile:def_help'] = 'Fichier de défition des synchronisation, doit contenir la correspondance entre
+les cours, cohortes et roles. Il a au minimum 3 colonnes courseid, cohort_idnumber et role_shortname';
 $string['tool/enva:managesurvey'] = 'Peut gerer les outils divers';
 $string['tool/enva:managegroupsync'] = 'Peut gérer la synchronisation des groupes';
 $string['tool/enva:managecohortsync'] = 'Peut gérer la synchronisation des cohortes';

@@ -37,7 +37,11 @@ $string['deleteyearoneemptysurveyconfirm'] = 'Confirm Empty Survey Data for year
 $string['emptyyearonesurveydatatask'] = 'ENVA: Delete empty survey data Task';
 
 $string['groupsyncfile:def'] = 'Group definition file';
+$string['groupsyncfile:def_help'] = 'Configuration file that will match a course and a set of groups. Minimum of 2 columns 
+courseid, groups. Groups contains a list of group names that if they don\'t exist will be created';
 $string['cohortsyncfile:def'] = 'Cohort sync definition file';
+$string['cohortsyncfile:def_help'] = 'Configuration file that will match a course, a cohort and a role. Minimum of 3 columns 
+courseid, cohort_idnumber et role_shortname';
 $string['tool/enva:managesurvey'] = 'Can manage cohort content';
 $string['tool/enva:managecohortsync'] = 'Can manage cohort synchronisation';
 $string['tool/enva:managegroupsync'] = 'Can manage group synchronisation';

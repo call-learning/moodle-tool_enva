@@ -26,6 +26,7 @@
 use tool_enva\local\csv\group_sync_importer;
 use tool_enva\form\group_sync_form;
 
+define('NO_OUTPUT_BUFFERING', true); // Progress bar is used here.
 require(__DIR__ . '/../../../config.php');
 global $CFG, $PAGE, $OUTPUT, $FULLME;
 require_once($CFG->libdir . '/adminlib.php');

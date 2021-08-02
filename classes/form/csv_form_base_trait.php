@@ -52,7 +52,7 @@ trait csv_form_base_trait {
         $mform = $this->_form;
         $element = $mform->createElement('filepicker', $syncfieldname, get_string($syncfieldname . ':def', 'tool_enva'));
         $mform->addElement($element);
-        $mform->addHelpButton($syncfieldname, $syncfieldname, 'tool_enva');
+        $mform->addHelpButton($syncfieldname, $syncfieldname . ':def', 'tool_enva');
         $mform->addRule($syncfieldname, null, 'required');
 
         $choices = csv_import_reader::get_delimiter_list();

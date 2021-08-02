@@ -138,7 +138,7 @@ class group_sync_importer extends base_csv_importer {
      */
     public function validate_row($row, $rowindex) {
         list($course, $groups) = $this->get_components($row, $rowindex);
-        if (!$course || $groups === false) {
+        if (!$course) {
             return false;
         }
         return true;

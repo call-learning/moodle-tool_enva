@@ -54,7 +54,7 @@ abstract class base_csv_importer {
     protected $rowcount = 0;
     /** @var array $header Array of headers (indexed by number so we can then find the column) */
     protected $headers;
-    /** @var object $currenttransaction */
+    /** @var \moodle_transaction $currenttransaction */
     protected $currenttransaction = null;
 
     /**
