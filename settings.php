@@ -46,8 +46,8 @@ if ($hassiteconfig) {
             'tool_enva/additionalstudentcohorts',
             get_string('settings:additionalstudentcohorts', 'tool_enva'), // Label.
             get_string('settings:additionalstudentcohorts_help', 'tool_enva'), // Help.
-            //  28 = Promo Thésards.
-            //  6,24,25,26 = Mobilité.
+            // 28 = Promo Thésards.
+            // 6,24,25,26 = Mobilité.
             '6,28,24,25,26',
             PARAM_RAW
         ));
@@ -75,5 +75,5 @@ if ($hassiteconfig) {
         )
     );
 
-    $ADMIN->add('courses', $envatools);
+    $ADMIN->add('accounts', $envatools);
 }
