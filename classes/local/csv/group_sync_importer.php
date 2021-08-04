@@ -56,6 +56,7 @@ class group_sync_importer extends base_csv_importer {
      * @throws dml_exception
      */
     public function process_row($row, $rowindex) {
+        global $DB;
         list($course, $groups) = $this->get_components($row, $rowindex);
         if (!$course) {
             return false;
@@ -66,17 +67,43 @@ class group_sync_importer extends base_csv_importer {
         // Purge all groups from the course if specified.
         $shouldpurge = $this->get_column_data($row, 'purge_groups');
         if ($shouldpurge) {
-            groups_delete_groups($course->id);
+            foreach (groups_get_all_groups($course->id) as $group) {
+                if (!in_array($group->name, $groups) && !in_array($group->idnumber, $groups)) {
+                    groups_delete_group($group->id);
+                }
+            }
         }
         foreach ($groups as $g) {
+            if ($shouldpurge) {
+                // Purge groups with the same names that do not have any user in it.
+                $othergroupssamename = $DB->get_records('groups', array('courseid' => $course->id, 'name' => $g));
+                $othergroupssameid = $DB->get_records('groups', array('courseid' => $course->id, 'idnumber' => $g));
+                $allgroups = array_merge($othergroupssamename, $othergroupssameid);
+                foreach ($allgroups as $grouptodelete) {
+                    $gmember = groups_get_members($grouptodelete->id);
+                    if (!$gmember || !count($gmember)) {
+                        groups_delete_group($grouptodelete->id);
+                    }
+                }
+            }
             $newgroupdata = new stdClass();
             $newgroupdata->name = $g;
+            $newgroupdata->idnumber = $g;
             $newgroupdata->courseid = $course->id;
             $newgroupdata->description = $g . self::GROUP_SYNC_ENROL_SUFFIX;
-            $gid = groups_create_group($newgroupdata);
-            if (!$gid) {
-                $this->fail(get_string('importgroupsync:error:cannotaddinstance', 'tool_enva', $rowindex));
-                return false;
+            $prevgroup = $DB->get_record('groups', array('courseid' => $course->id, 'name' => $g));
+            if (!$prevgroup) {
+                $prevgroup = $DB->get_record('groups', array('courseid' => $course->id, 'idnumber' => $g));
+            }
+            if ($prevgroup) {
+                $newgroupdata = (object) array_merge((array) $prevgroup, (array) $newgroupdata);
+                groups_update_group($newgroupdata);
+            } else {
+                $gid = groups_create_group($newgroupdata);
+                if (!$gid) {
+                    $this->fail(get_string('importgroupsync:error:cannotaddinstance', 'tool_enva', $rowindex));
+                    return false;
+                }
             }
         }
         return true;

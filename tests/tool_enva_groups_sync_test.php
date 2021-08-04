@@ -42,8 +42,10 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_enva_groups_sync_test extends tool_enva_base_test {
+    /**
+     * A simple import test
+     */
     public function test_csv_import_simple() {
-        global $DB;
         $this->resetAfterTest(true);
         // Now do the group sync import.
         $importer = new group_sync_importer(file_get_contents(__DIR__ . '/fixtures/group_sync_example.csv'));
@@ -94,6 +96,9 @@ class tool_enva_groups_sync_test extends tool_enva_base_test {
 
     }
 
+    /**
+     * A simple import with purged
+     */
     public function test_csv_import_purged() {
         $this->resetAfterTest(true);
 
@@ -129,6 +134,44 @@ class tool_enva_groups_sync_test extends tool_enva_base_test {
         }, groups_get_all_groups(604)));
         $this->assertCount(13, $c604groupsid);
         $this->assertContains($gidnonpurged, $c604groupsid);
+    }
+
+    /**
+     * Existing group modification
+     */
+    public function test_csv_import_purged_with_existing_modified() {
+        $this->resetAfterTest(true);
+
+        // Create existing groups.
+        $newgroupdata = new stdClass();
+        $newgroupdata->name = 'A1Gr4.1';
+        $newgroupdata->courseid = 502;
+        $newgroupdata->description = 'existing group';
+        $gidmodified = (int) groups_create_group($newgroupdata);
+
+        $newgroupdata = new stdClass();
+        $newgroupdata->name = 'existing group';
+        $newgroupdata->courseid = 502;
+        $newgroupdata->description = 'existing group';
+        $gidpurged = (int) groups_create_group($newgroupdata);
+
+        // Now do the import.
+        $importer = new group_sync_importer(file_get_contents(__DIR__ . '/fixtures/group_sync_example.csv'));
+
+        $this->assertEquals('', $importer->get_error());
+
+        $importer->process_import();
+
+        $allgroups = groups_get_all_groups(502);
+        $c502groupsid = array_values(array_map(function($g) {
+            return $g->id;
+        }, $allgroups));
+
+        $this->assertCount(12, $c502groupsid);
+        $this->assertNotContains($gidpurged, $c502groupsid);
+        $this->assertContains($gidmodified, $c502groupsid);
+        $this->assertEquals('A1Gr4.1', $allgroups[$gidmodified]->name);
+        $this->assertEquals('A1Gr4.1', $allgroups[$gidmodified]->idnumber);
     }
 }
 

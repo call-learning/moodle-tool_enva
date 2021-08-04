@@ -41,6 +41,9 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_enva_cohort_sync_test extends tool_enva_base_test {
+    /**
+     * Simple import
+     */
     public function test_csv_import_simple() {
         global $DB;
         $this->resetAfterTest(true);
