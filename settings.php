@@ -43,12 +43,12 @@ if ($hassiteconfig) {
     // Replacement and patterns for group name (see preg_replace).
     $surveypage->add(
         new admin_setting_configtext(
-            'tool_enva/additionalstudentcohorts',
-            get_string('settings:additionalstudentcohorts', 'tool_enva'), // Label.
-            get_string('settings:additionalstudentcohorts_help', 'tool_enva'), // Help.
-            // 28 = Promo Thésards.
+            'tool_enva/cohortstoreset',
+            get_string('settings:cohortstoreset', 'tool_enva'), // Label.
+            get_string('settings:cohortstoreset_help', 'tool_enva'), // Help.
             // 6,24,25,26 = Mobilité.
-            '6,28,24,25,26',
+            // Le reste: les A2 => A6.
+            '1,2,3,4,5,10,11,12,13,14,15,27,33,38',
             PARAM_RAW
         ));
 

@@ -61,11 +61,7 @@ class enva_menus implements renderable {
                 'url' => new moodle_url($rooturl, array('action' => 'deletesurveyinfo')),
                 'title' => get_string('deletesurveyinfo', 'tool_enva'),
             ],
-            (object) [
-                'url' => new moodle_url($rooturl, array('action' => 'deleteyearoneemptysurvey')),
-                'title' => get_string('deleteyearoneemptysurvey', 'tool_enva'),
-            ]
-
+            // The deleteyearoneemptysurvey Disabled for now.
         ];
     }
 }

@@ -26,7 +26,7 @@
 $string['pluginname'] = 'ENVA Utils/Tools';
 
 // Tools.
-$string['managesurvey'] = 'Cohort content';
+$string['managesurvey'] = 'Outils questionnaire avenir professionnel';
 $string['managecohortsync'] = 'Cohort Course Synchronisation';
 $string['managegroupsync'] = 'Group Course Synchronisation';
 $string['downloademptysurvey'] = 'Download Student with empty survey data';
@@ -66,8 +66,8 @@ $string['message:syncallcohortfailed'] = 'The process of synchronising all cohor
 check the output of php enrol/cohort/cli/sync.php. {$a->error} - ({$a->trace})';
 $string['message:syncallcohortok:title'] = 'Synchronising all cohort succeed.';
 $string['message:syncallcohortok'] = 'The process of synchronising all cohort was a success.';
-$string['settings:additionalstudentcohorts'] = 'Additionnal cohort for survey';
-$string['settings:additionalstudentcohorts_help'] = 'Numerical ID separated by comma, which allow additional cohort to be considered
+$string['settings:cohortstoreset'] = 'Cohort to reset for survey';
+$string['settings:cohortstoreset_help'] = 'Numerical ID separated by comma, which allow to specify cohort to be considered
 when managing the entry survey';
 $string['sync:enrolmentname'] = 'toolenva::{$a->cohortname}({$a->rolename})';
 $string['surveyparameters'] = 'Survey parameters';

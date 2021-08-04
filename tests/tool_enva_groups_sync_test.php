@@ -140,6 +140,7 @@ class tool_enva_groups_sync_test extends tool_enva_base_test {
      * Existing group modification
      */
     public function test_csv_import_purged_with_existing_modified() {
+        global $DB;
         $this->resetAfterTest(true);
 
         // Create existing groups.
@@ -148,6 +149,14 @@ class tool_enva_groups_sync_test extends tool_enva_base_test {
         $newgroupdata->courseid = 502;
         $newgroupdata->description = 'existing group';
         $gidmodified = (int) groups_create_group($newgroupdata);
+
+        // Add a user so we are sure the group is not purged.
+        $user = $this->getDataGenerator()->create_user();
+        $course = $DB->get_record('course', array('id' => 502));
+        // Create enrolment plugin.
+        enrol_course_updated(true, $course, null);
+        $this->getDataGenerator()->enrol_user($user->id, 502);
+        groups_add_member($gidmodified, $user->id);
 
         $newgroupdata = new stdClass();
         $newgroupdata->name = 'existing group';

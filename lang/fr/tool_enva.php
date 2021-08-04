@@ -26,7 +26,7 @@
 $string['pluginname'] = 'Outils ENVA';
 
 // Tools.
-$string['managesurvey'] = 'Outils divers';
+$string['managesurvey'] = 'Outils questionnaire avenir professionnel';
 $string['managecohortsync'] = 'Synchronisation des cohortes et cours';
 $string['managegroupsync'] = 'Synchronisation des groupes dans les cours';
 $string['downloademptysurvey'] = 'Télécharger les étudiants avec une réponse vide à l\'enquête';
@@ -63,8 +63,8 @@ $string['importcohortsync:error:wrongcourse'] = 'Mauvais cours (Line:{$a})';
 $string['importcohortsync:error:wrongcohort'] = 'Mauvaise cohorte (Line:{$a})';
 $string['importcohortsync:error:wrongrole'] = 'Mauvais role (Line:{$a})';
 $string['messageprovider:syncfinished'] = 'Synchronisation des cohortes terminée';
-$string['settings:additionalstudentcohorts'] = 'Cohortes additionnelles pour les questionnaires avenir professionnel';
-$string['settings:additionalstudentcohorts_help'] = 'Identifiants numériques séparés par des virgules qui permettent de rajouter
-des cohortes à l\'ensemble des cohortes concernées par les questionnaires avenir professionnel';
+$string['settings:cohortstoreset'] = 'Cohortes a remettre à zéro pour les questionnaires avenir professionnel';
+$string['settings:cohortstoreset_help'] = 'Identifiants numériques séparés par des virgules qui permettent de spécifier les
+ cohortes concernées par les questionnaires avenir professionnel';
 $string['sync:enrolmentname'] = 'outilenva::{$a->cohortname}({$a->rolename})';
 $string['surveyparameters'] = 'Paramètres questionnaire avenir professionnel';

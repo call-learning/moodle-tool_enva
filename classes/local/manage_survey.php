@@ -127,7 +127,7 @@ class manage_survey {
      */
     public static function get_sql_user_data_parts() {
         global $DB;
-        $studentcohortsid = self::get_survey_cohorts_list();
+        $studentcohortsid = self::get_survey_to_reset_cohorts_list();
         // Select all user fields which are named 'choix...'.
         $selecteduserfields = $DB->get_fieldset_select('user_info_field', "id", "shortname LIKE 'choix%'");
         list($sqlcohortid, $paramscohortid) = $DB->get_in_or_equal($studentcohortsid, SQL_PARAMS_NAMED, 'pcohort');
@@ -144,34 +144,15 @@ class manage_survey {
      * @return array
      * @throws dml_exception
      */
-    public static function get_survey_cohorts_list() {
-
-        $studentcohortsid = self::get_master_student_cohort_ids();
-        $studentcohortsid = array_map(function($cid) {
-            return intval(trim($cid));
-        }, $studentcohortsid);
-        $additionalstudentcohorts = get_config('tool_enva', 'additionalstudentcohorts');
-        if (!empty($additionalstudentcohorts)) {
-            $additionalstudentcohorts = explode(',', $additionalstudentcohorts);
-            $additionalstudentcohorts = array_map(function($cid) {
+    public static function get_survey_to_reset_cohorts_list() {
+        $cohortstoreset = get_config('tool_enva', 'cohortstoreset');
+        if ($cohortstoreset) {
+            return array_map(function($cid) {
                 return intval(trim($cid));
-            }, $additionalstudentcohorts);
-            $studentcohortsid = array_merge($studentcohortsid, $additionalstudentcohorts);
+            }, explode(',', $cohortstoreset));
+        } else {
+            return [];
         }
-        return $studentcohortsid;
-    }
-
-    /**
-     * Get master student cohort ID
-     *
-     * @return array
-     * @throws dml_exception
-     */
-    public static function get_master_student_cohort_ids() {
-        global $DB;
-        $rexp = $DB->sql_regex() . " '^A[0-9].*$'";
-
-        return $DB->get_fieldset_select('cohort', 'id', 'name ' . $rexp);
     }
 
     // Field deletion.
@@ -195,7 +176,7 @@ class manage_survey {
             $DB->delete_records_select('user_info_data', $sqlselect, array_merge($paramscohortid, $paramsfieldid));
 
             // Then : add dummy data ('Autre') into fields related to other users.
-            $studentcohortsid = self::get_survey_cohorts_list();
+            $studentcohortsid = self::get_survey_to_reset_cohorts_list();
             $selecteduserfields = $DB->get_fieldset_select('user_info_field', "id", "shortname LIKE 'choix%'");
             $allnonstudents = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {cohort_members} WHERE cohortid NOT IN (' .
                 implode(',', $studentcohortsid) . ')');
@@ -210,14 +191,16 @@ class manage_survey {
                     if (!$exists) {
                         $DB->insert_record('user_info_data', $userdatafield);
                     } else {
-                        $userdatafield->id = $exists->id;
-                        $DB->update_record('user_info_data', $userdatafield);
+                        if (empty($exists->data)) {
+                            $userdatafield->id = $exists->id;
+                            $DB->update_record('user_info_data', $userdatafield);
+                        }
                     }
                 }
             }
             $transaction->allow_commit();
         } catch (moodle_exception $e) {
-            debug($e->getMessage() . '-'. $e->getTraceAsString());
+            debugging($e->getMessage() . '-'. $e->getTraceAsString());
             $transaction->rollback($e);
         }
         $transaction->dispose();
