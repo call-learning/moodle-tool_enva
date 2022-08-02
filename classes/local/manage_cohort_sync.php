@@ -24,7 +24,6 @@
  */
 
 namespace tool_enva\local;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Class manage_cohort_sync

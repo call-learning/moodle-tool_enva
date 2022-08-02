@@ -24,7 +24,6 @@
  */
 
 namespace tool_enva\output;
-defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use moodle_exception;

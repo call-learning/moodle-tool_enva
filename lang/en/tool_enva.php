@@ -27,8 +27,15 @@ $string['pluginname'] = 'ENVA Utils/Tools';
 
 // Tools.
 $string['managesurvey'] = 'Outils questionnaire avenir professionnel';
-$string['managecohortsync'] = 'Cohort Course Synchronisation';
-$string['managegroupsync'] = 'Group Course Synchronisation';
+$string['managecohortsync'] = 'Template Import - Cohort and Course';
+$string['managecohortsync_desc'] = 'This tool will allow to import a CSV file matching courses and cohorts and roles and so
+ to rebuild the links between courses, cohortes and roles via cohort sync. The file format is
+  <pre>courseid,cohort_idnumber,role_shortname</pre> with courseid, the course id number, cohort_idnumber
+ shortname of the cohort and role_shortname is the name of the role. One line per link.';
+$string['managegroupsync'] = 'Template Import - Groups in course';
+$string['managegroupsync_desc'] = 'This tool will allow to import a CSV file matching courses and groups. The file format is
+  <pre>courseid,groups</pre> with courseid, the course id number, groups a list of courses separated by comma.
+  One line per course.';
 $string['downloademptysurvey'] = 'Download Student with empty survey data';
 $string['deletesurveyinfo'] = 'Delete Survey Data';
 $string['deleteyearoneemptysurvey'] = 'Delete empty year one survey';

@@ -23,7 +23,6 @@
  */
 
 namespace tool_enva\task;
-defined('MOODLE_INTERNAL') || die();
 
 use core\task\adhoc_task;
 use moodle_exception;

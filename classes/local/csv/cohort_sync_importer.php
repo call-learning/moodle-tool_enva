@@ -33,8 +33,6 @@ use ReflectionClass;
 use stdClass;
 use tool_enva\task\sync_all_course_cohort_enrol;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * This is the implementation of the cohort importer. Based from lpimportcsv
  *

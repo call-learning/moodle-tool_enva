@@ -46,6 +46,8 @@ if ($form->is_submitted() && $data = $form->get_data()) {
 // Output starts here.
 echo $output->header();
 echo $output->heading(get_string('managegroupsync', 'tool_enva'));
+echo $output->box(get_string('managegroupsync_desc', 'tool_enva'),
+    'border shadow-lg p-3 mb-5 bg-white rounded ');
 if ($importer) {
     if ($importer->get_error()) {
         echo $OUTPUT->box($importer->get_error(), 'alert alert-danger');

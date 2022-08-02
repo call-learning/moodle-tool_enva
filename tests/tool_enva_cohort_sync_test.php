@@ -22,8 +22,10 @@
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+namespace tool_enva;
+use context_course;
 use tool_enva\local\csv\cohort_sync_importer;
+use tool_enva_base_test;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -127,5 +129,3 @@ class tool_enva_cohort_sync_test extends tool_enva_base_test {
             $firstmessage->subject);
     }
 }
-
-

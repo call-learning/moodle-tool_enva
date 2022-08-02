@@ -27,8 +27,6 @@ namespace tool_enva\task;
 use core\task\scheduled_task;
 use tool_enva\local\manage_survey;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class empty_yearone_survey_data
  *

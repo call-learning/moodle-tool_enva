@@ -24,7 +24,6 @@
  */
 
 namespace tool_enva\local;
-defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use csv_export_writer;

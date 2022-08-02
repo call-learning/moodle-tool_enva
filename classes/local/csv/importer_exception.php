@@ -27,8 +27,6 @@ namespace tool_enva\local\csv;
 
 use moodle_exception;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Exception for the importer
  *

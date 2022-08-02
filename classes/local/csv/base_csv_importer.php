@@ -31,8 +31,6 @@ use dml_transaction_exception;
 use progress_bar;
 use Throwable;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * This file contains the abstract class to do csv import. Based from lpimportcsv
  *

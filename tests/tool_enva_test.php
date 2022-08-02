@@ -22,10 +22,11 @@
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+namespace tool_enva;
 defined('MOODLE_INTERNAL') || die();
 
 use tool_enva\local\manage_survey;
+use tool_enva_base_test;
 
 global $CFG;
 require_once($CFG->dirroot . '/cohort/lib.php');
@@ -88,8 +89,7 @@ class tool_enva_test extends tool_enva_base_test {
      * Set user profile fields
      *
      * @param object $user
-     * @param string $fieldvalue
-     * @throws dml_exception
+     * @param array $fieldvalue
      */
     protected function set_user_profile_field($user, $fieldvalue) {
         static $evecustomprofilefields = null;
@@ -158,5 +158,3 @@ class tool_enva_test extends tool_enva_base_test {
     }
 
 }
-
-

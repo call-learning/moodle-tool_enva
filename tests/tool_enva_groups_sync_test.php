@@ -22,12 +22,14 @@
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+namespace tool_enva;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
+use stdClass;
 use tool_enva\local\csv\group_sync_importer;
+use tool_enva_base_test;
 
 require_once($CFG->dirroot . '/cohort/lib.php');
 require_once($CFG->dirroot . '/user/profile/lib.php');
@@ -183,5 +185,3 @@ class tool_enva_groups_sync_test extends tool_enva_base_test {
         $this->assertEquals('A1Gr4.1', $allgroups[$gidmodified]->idnumber);
     }
 }
-
-

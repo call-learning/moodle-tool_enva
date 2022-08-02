@@ -25,8 +25,6 @@
 
 namespace tool_enva\form;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core_text;
 use csv_import_reader;
 
