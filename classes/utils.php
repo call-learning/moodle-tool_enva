@@ -13,20 +13,21 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+namespace tool_enva;
 
 /**
- * Tools for ENVA
+ * Tools for ENVA - Sync all cohorts
  *
  * @package    tool_enva
- * @copyright  2020 CALL Learning
- * @author     Laurent David <laurent@call-learning.fr>
+ * @copyright  2022 Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class utils {
+    /**
+     * Name of the cohort to reset.
+     */
+    const DEFAULT_COHORTS_TO_RESET_NAMES
+        = 'A2,A3,A4,A5,A6-Autres,A6-AP,A6-AC,A6-EQ,Internes-AP,Internes-EQ,Internes-AC,A6-AP-EQ,A6-AC-EQ';
+}
 
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tool_enva';
-$plugin->version = 2022080400;
-$plugin->release = '1.1';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2018120305; // Moodle 3.6.

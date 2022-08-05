@@ -15,18 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tools for ENVA
+ * Upgrade enva
  *
  * @package    tool_enva
- * @copyright  2020 CALL Learning
+ * @copyright  2022 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'tool_enva';
-$plugin->version = 2022080400;
-$plugin->release = '1.1';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2018120305; // Moodle 3.6.
+/**
+ * Function to upgrade tool_enva
+ *
+ * @param int $oldversion the version we are upgrading from
+ * @return bool result
+ */
+function xmldb_tool_enva_upgrade($oldversion) {
+    if ($oldversion < 2022080400) {
+        set_config('cohortstoreset', \tool_enva\utils::DEFAULT_COHORTS_TO_RESET_NAMES, 'tool_enva');
+        // Hyperplanningsync savepoint reached.
+        upgrade_plugin_savepoint(true, 2022080400, 'tool', 'enva');
+    }
+}

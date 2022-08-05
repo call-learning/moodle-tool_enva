@@ -143,19 +143,35 @@ class manage_survey {
      * @return array
      * @throws dml_exception
      */
-    public static function get_survey_to_reset_cohorts_list() {
-        $cohortstoreset = get_config('tool_enva', 'cohortstoreset');
-        if ($cohortstoreset) {
-            return array_map(function($cid) {
-                return intval(trim($cid));
-            }, explode(',', $cohortstoreset));
-        } else {
-            return [];
+    public static function get_survey_to_reset_cohorts_list(): array {
+        static $allcohortsid = null;
+        if (is_null($allcohortsid)) {
+            global $DB;
+            $allcohortsid = [];
+            $cohortstoresetnames = get_config('tool_enva', 'cohortstoreset');
+            if (!empty($cohortstoresetnames)) {
+                $cohortstoresetarray = array_map('static::remove_spaces_lowercase',
+                    explode(',', $cohortstoresetnames));
+                // We need to match strings that can have been spaced out quite randomly, so no sql here.
+                $allcohorts = array_map('static::remove_spaces_lowercase',
+                    $DB->get_records_menu('cohort', [], '', 'id,idnumber'));
+                $allcohortsid = array_intersect($allcohorts, $cohortstoresetarray);
+            }
         }
+        return array_keys($allcohortsid);
+    }
+
+    /**
+     * Remove spaces and lowercase
+     *
+     * @param string $entry
+     * @return string
+     */
+    private static function remove_spaces_lowercase(string $entry): string {
+        return preg_replace("/\s+/", "", strtolower($entry));;
     }
 
     // Field deletion.
-
     /**
      *
      * Delete all user info data for all involved cohort so we trigger the the form when user first logs in
@@ -199,7 +215,7 @@ class manage_survey {
             }
             $transaction->allow_commit();
         } catch (moodle_exception $e) {
-            debugging($e->getMessage() . '-'. $e->getTraceAsString());
+            debugging($e->getMessage() . '-' . $e->getTraceAsString());
             $transaction->rollback($e);
         }
         $transaction->dispose();
