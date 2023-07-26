@@ -37,7 +37,7 @@ require_once($CFG->dirroot . '/user/profile/lib.php');
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_enva_base_test extends advanced_testcase {
+class utils extends advanced_testcase {
     /** @var int $USER_PER_COHORT **/
     const USER_PER_COHORT = 10;
 
@@ -48,19 +48,19 @@ class tool_enva_base_test extends advanced_testcase {
      * Setup tests
      *
      */
-    public function setUp() {
+    public function setUp(): void {
         parent::setUp();
         global $DB;
         $this->resetAfterTest();
         // Setup custom profile fields.
-        $dataset = $this->createCsvDataSet(array(
+        $dataset = $this->dataset_from_files(array(
                 'cohort' => __DIR__ . '/fixtures/cohort.csv',
                 'course' => __DIR__ . '/fixtures/course.csv',
                 'user_info_field' => __DIR__ . '/fixtures/user_info_field.csv',
                 'role' => __DIR__ . '/fixtures/role.csv'
             )
         );
-        $this->loadDataSet($dataset);
+        $dataset->to_database();
 
         $evecohorts = $DB->get_records('cohort');
         $i = 0;
@@ -93,7 +93,7 @@ class tool_enva_base_test extends advanced_testcase {
     /**
      * Reset to restart
      */
-    public function tearDown() {
+    public function tearDown(): void {
         parent::tearDown();
         $this->users = null;
     }

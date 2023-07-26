@@ -25,7 +25,7 @@
 namespace tool_enva;
 use context_course;
 use tool_enva\local\csv\cohort_sync_importer;
-use tool_enva_base_test;
+use utils;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -42,7 +42,7 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_enva_cohort_sync_test extends tool_enva_base_test {
+class tool_enva_cohort_sync_test extends utils {
     /**
      * Simple import
      */

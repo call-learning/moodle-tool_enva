@@ -29,7 +29,7 @@ global $CFG;
 
 use stdClass;
 use tool_enva\local\csv\group_sync_importer;
-use tool_enva_base_test;
+use utils;
 
 require_once($CFG->dirroot . '/cohort/lib.php');
 require_once($CFG->dirroot . '/user/profile/lib.php');
@@ -43,7 +43,7 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_enva_groups_sync_test extends tool_enva_base_test {
+class tool_enva_groups_sync_test extends utils {
     /**
      * A simple import test
      */
@@ -180,7 +180,7 @@ class tool_enva_groups_sync_test extends tool_enva_base_test {
 
         $this->assertCount(12, $c502groupsid);
         $this->assertNotContains($gidpurged, $c502groupsid);
-        $this->assertContains($gidmodified, $c502groupsid);
+        $this->assertContainsEquals($gidmodified, $c502groupsid);
         $this->assertEquals('A1Gr4.1', $allgroups[$gidmodified]->name);
         $this->assertEquals('A1Gr4.1', $allgroups[$gidmodified]->idnumber);
     }

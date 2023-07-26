@@ -26,7 +26,7 @@ namespace tool_enva;
 defined('MOODLE_INTERNAL') || die();
 
 use tool_enva\local\manage_survey;
-use tool_enva_base_test;
+use utils;
 
 global $CFG;
 require_once($CFG->dirroot . '/cohort/lib.php');
@@ -41,7 +41,7 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_enva_test extends tool_enva_base_test {
+class tool_enva_test extends utils {
     /**
      * Test deletion of survey info
      */
@@ -76,12 +76,12 @@ class tool_enva_test extends tool_enva_base_test {
         $useryeartwofields = profile_get_user_fields_with_data($useryeartwo->id);
         $userpersonnelfields = profile_get_user_fields_with_data($userpersonnel->id);
 
-        $this->assertTrue(user_not_fully_set_up($useryearone));
+        $this->assertFalse(user_not_fully_set_up($useryearone)); // We do not reset Year one survey.
         $this->assertTrue(user_not_fully_set_up($useryeartwo));
         $this->assertFalse(user_not_fully_set_up($userpersonnel));
-        $this->assertTrue($useryearonefields[1]->data == "");
-        $this->assertTrue($useryeartwofields[1]->data == "");
-        $this->assertTrue($userpersonnelfields[1]->data == "Autre");
+        $this->assertEquals("Vétérinaire praticien canin", $useryearonefields[1]->data);
+        $this->assertEmpty($useryeartwofields[1]->data);
+        $this->assertEquals("Autre", $userpersonnelfields[1]->data);
 
     }
 
