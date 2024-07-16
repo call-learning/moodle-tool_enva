@@ -29,22 +29,23 @@ require(__DIR__ . '/../../../../config.php');
 global $CFG;
 require_once($CFG->libdir . '/clilib.php');
 
-$usage = "Run different setup script for testing purpose
+$usage = "Delete question attempts for deleted users and question_attempt step data
 
 Usage:
-    # php tool.php --name=<functionname>
-    # php tool.php [--help|-h]
+    # php question_attempt_purge.php --deletedusers
+    # php question_attempt_purge.php [--help|-h]
 
 Options:
     -h --help                   Print this help.
-    --name=<frankenstyle>       Name of the function to test/run
+    --deletedusers              Delete question_attempt_steps for deleted users
 ";
 
 list($options, $unrecognised) = cli_get_params([
     'help' => false,
-    'name' => null,
+    'deletedusers' => null,
 ], [
-    'h' => 'help'
+    'h' => 'help',
+    'd' => 'deletedusers',
 ]);
 
 if ($unrecognised) {
@@ -58,12 +59,17 @@ if ($options['help']) {
 }
 $possiblefunctions = array('print_export_cohorts', 'print_yearone_users_with_empty_data');
 
-if ($options['name'] === null) {
-    $options['name'] = $possiblefunctions[0];
-}
-
-if (in_array($options['name'], $possiblefunctions)) {
-    call_user_func($options['name']);
-} else {
-    print ('Called function not in the list (' . implode(',', $possiblefunctions) . ')');
+if (isset($options['deletedusers'])) {
+    global $DB;
+    $sql = "SELECT DISTINCT qas.id
+             FROM {question_attempt_steps} qas 
+             LEFT JOIN {user} u ON u.id = qas.userid WHERE u.id IS NULL OR u.deleted = 1";
+    $rs = $DB->get_recordset_sql($sql);
+    cli_writeln('Deleting question_attempt_steps for deleted users');
+    foreach ($rs as $record) {
+        cli_write('.');
+        $DB->delete_records('question_attempt_steps', array('id' => $record->id));
+        $DB->delete_records('question_attempt_step_data', array('attemptstepid' => $record->id));
+    }
+    $rs->close();
 }
