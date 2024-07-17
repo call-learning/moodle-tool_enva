@@ -51,24 +51,24 @@ class tool_enva_test extends utils {
         $useryeartwo = $this->users[self::USER_PER_COHORT];
         $userpersonnel = $this->users[self::USER_PER_COHORT * 6];
 
-        $this->set_user_profile_field($useryearone, array(
+        $this->set_user_profile_field($useryearone, [
             'Provenance' => 'Etudiants Alfort',
             'choix1' => 'Vétérinaire praticien canin',
             'choix2' => 'Vétérinaire praticien canin',
-            'choix3' => 'Vétérinaire praticien canin'
-        ));
-        $this->set_user_profile_field($useryeartwo, array(
+            'choix3' => 'Vétérinaire praticien canin',
+        ]);
+        $this->set_user_profile_field($useryeartwo, [
             'Provenance' => 'Etudiants Alfort',
             'choix1' => 'Vétérinaire praticien canin',
             'choix2' => 'Vétérinaire praticien canin',
-            'choix3' => 'Vétérinaire praticien canin'
-        ));
-        $this->set_user_profile_field($userpersonnel, array(
+            'choix3' => 'Vétérinaire praticien canin',
+        ]);
+        $this->set_user_profile_field($userpersonnel, [
             'Provenance' => 'Personnels Alfort',
             'choix1' => 'Autre',
             'choix2' => 'Autre',
-            'choix3' => 'Autre'
-        ));
+            'choix3' => 'Autre',
+        ]);
 
         manage_survey::delete_user_yearly_surveyinfo();
 
@@ -100,7 +100,7 @@ class tool_enva_test extends utils {
         foreach ($evecustomprofilefields as $cf) {
             profile_save_data((object) [
                 'id' => $user->id,
-                'profile_field_' . $cf->shortname => $fieldvalue [$cf->shortname],
+                'profile_field_' . $cf->shortname => $fieldvalue[$cf->shortname],
             ]);
         }
     }
@@ -115,30 +115,30 @@ class tool_enva_test extends utils {
         $useryeartwo = $this->users[self::USER_PER_COHORT];
         $userpersonnel = $this->users[self::USER_PER_COHORT * 6];
 
-        $this->set_user_profile_field($useryearone, array(
+        $this->set_user_profile_field($useryearone, [
             'Provenance' => 'Etudiants Alfort',
             'choix1' => '',
             'choix2' => '',
-            'choix3' => ''
-        ));
-        $this->set_user_profile_field($useryearonewithresponse, array(
+            'choix3' => '',
+        ]);
+        $this->set_user_profile_field($useryearonewithresponse, [
             'Provenance' => 'Etudiants Alfort',
             'choix1' => 'Vétérinaire praticien canin',
             'choix2' => 'Vétérinaire praticien canin',
-            'choix3' => 'Vétérinaire praticien canin'
-        ));
-        $this->set_user_profile_field($useryeartwo, array(
+            'choix3' => 'Vétérinaire praticien canin',
+        ]);
+        $this->set_user_profile_field($useryeartwo, [
             'Provenance' => 'Etudiants Alfort',
             'choix1' => 'Vétérinaire praticien canin',
             'choix2' => 'Vétérinaire praticien canin',
-            'choix3' => 'Vétérinaire praticien canin'
-        ));
-        $this->set_user_profile_field($userpersonnel, array(
+            'choix3' => 'Vétérinaire praticien canin',
+        ]);
+        $this->set_user_profile_field($userpersonnel, [
             'Provenance' => 'Personnels Alfort',
             'choix1' => 'Autre',
             'choix2' => 'Autre',
-            'choix3' => 'Autre'
-        ));
+            'choix3' => 'Autre',
+        ]);
 
         manage_survey::delete_user_surveyinfo_yearone_when_empty();
 

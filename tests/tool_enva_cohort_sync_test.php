@@ -64,33 +64,33 @@ class tool_enva_cohort_sync_test extends utils {
         $this->assertEquals('', $importer->get_error());
 
         $importer->process_import();
-        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
-        $studentguestrole = $DB->get_record('role', array('shortname' => 'student_invite'));
+        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
+        $studentguestrole = $DB->get_record('role', ['shortname' => 'student_invite']);
 
-        $cohortsyncassoc = array(
-            '502' => array(
+        $cohortsyncassoc = [
+            '502' => [
                 'A1' => $studentrole->id,
                 'A2' => $studentguestrole->id,
                 'A3' => $studentguestrole->id,
                 'A4' => $studentguestrole->id,
-            ),
-            '604' => array(
+            ],
+            '604' => [
                 'A5-Autre' => $studentrole->id,
                 'A5-Bovine' => $studentrole->id,
                 'A5-Canine' => $studentrole->id,
                 'A5-Equine' => $studentrole->id,
-            )
-        );
+            ],
+        ];
 
         foreach ($cohortsyncassoc as $courseid => $cohortassoc) {
             foreach ($cohortassoc as $cohortidnumber => $roleid) {
-                $cohort = $DB->get_record('cohort', array('idnumber' => $cohortidnumber));
-                $role = $DB->get_record('role', array('id' => $roleid));
-                $enrolrecord = $DB->get_record('enrol', array(
+                $cohort = $DB->get_record('cohort', ['idnumber' => $cohortidnumber]);
+                $role = $DB->get_record('role', ['id' => $roleid]);
+                $enrolrecord = $DB->get_record('enrol', [
                     'courseid' => $courseid,
                     'enrol' => cohort_sync_importer::COHORT_SYNC_ENROL_PLUGIN_NAME,
                     'customint1' => $cohort->id,
-                    'roleid' => $roleid), '*', MUST_EXIST);
+                    'roleid' => $roleid, ], '*', MUST_EXIST);
                 $this->assertNotEmpty($enrolrecord);
                 $this->assertEquals(cohort_sync_importer::create_enrolmnent_name($cohort->name, $role->name), $enrolrecord->name);
                 $this->assertEquals($cohort->id, $enrolrecord->customint1);

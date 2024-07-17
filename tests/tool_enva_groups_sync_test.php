@@ -70,7 +70,7 @@ class tool_enva_groups_sync_test extends utils {
             "A1Gr8.5",
             "A1Gr8.6",
             "A1Gr8.7",
-            "A1Gr8.8"] as $key => $value) {
+            "A1Gr8.8", ] as $key => $value) {
             $this->assertArrayHasKey($key, $c502groups);
             $this->assertSame($value, $c502groups[$key]);
         }
@@ -154,7 +154,7 @@ class tool_enva_groups_sync_test extends utils {
 
         // Add a user so we are sure the group is not purged.
         $user = $this->getDataGenerator()->create_user();
-        $course = $DB->get_record('course', array('id' => 502));
+        $course = $DB->get_record('course', ['id' => 502]);
         // Create enrolment plugin.
         enrol_course_updated(true, $course, null);
         $this->getDataGenerator()->enrol_user($user->id, 502);

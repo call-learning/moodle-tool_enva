@@ -89,17 +89,17 @@ class cohort_sync_importer extends base_csv_importer {
         }
         // Get an enrolment instance if it exists.
         $instances = $DB->get_records('enrol',
-            array('courseid' => $course->id,
+            ['courseid' => $course->id,
                 'enrol' => self::COHORT_SYNC_ENROL_PLUGIN_NAME,
                 'roleid' => $role->id,
-                'customint1' => $cohort->id));
+                'customint1' => $cohort->id, ]);
         // Case we have several instances with the same cohort sync.
         // We disable all of them and we will work with the last one.
         if ($instances && count($instances) > 1) {
             foreach ($instances as $inst) {
                 $this->update_enrol_instance($inst,
                     (object) ['name' => self::create_enrolmnent_name($cohort->name, $role->name),
-                        'status' => ENROL_INSTANCE_DISABLED]);
+                        'status' => ENROL_INSTANCE_DISABLED, ]);
                 $instance = $inst;
             }
         } else {
@@ -120,7 +120,7 @@ class cohort_sync_importer extends base_csv_importer {
         } else {
             if (!$this->update_enrol_instance($instance,
                 (object) ['name' => self::create_enrolmnent_name($cohort->name, $role->name),
-                    'status' => ENROL_INSTANCE_ENABLED])) {
+                    'status' => ENROL_INSTANCE_ENABLED, ])) {
                 $this->fail(get_string('importcohortsync:error:cannotupdateinstance', 'tool_enva', $rowindex));
                 return false;
             }
@@ -153,7 +153,7 @@ class cohort_sync_importer extends base_csv_importer {
             $this->fail(get_string('importcohortsync:error:wrongrole', 'tool_enva', $rowindex));
             return null;
         }
-        return array($course, $cohort, $role);
+        return [$course, $cohort, $role];
     }
 
     /**
@@ -166,7 +166,7 @@ class cohort_sync_importer extends base_csv_importer {
     protected function get_course($row) {
         global $DB;
         $courseid = $this->get_column_data($row, 'courseid');
-        return $DB->get_record('course', array('id' => $courseid));
+        return $DB->get_record('course', ['id' => $courseid]);
     }
 
     /**
@@ -179,7 +179,7 @@ class cohort_sync_importer extends base_csv_importer {
     protected function get_cohort($row) {
         global $DB;
         $cohortidnumber = $this->get_column_data($row, 'cohort_idnumber');
-        return $DB->get_record('cohort', array('idnumber' => $cohortidnumber));
+        return $DB->get_record('cohort', ['idnumber' => $cohortidnumber]);
     }
 
     /**
@@ -192,7 +192,7 @@ class cohort_sync_importer extends base_csv_importer {
     protected function get_role($row) {
         global $DB;
         $roleshortname = $this->get_column_data($row, 'role_shortname');
-        return $DB->get_record('role', array('shortname' => $roleshortname));
+        return $DB->get_record('role', ['shortname' => $roleshortname]);
     }
 
     /**
@@ -268,9 +268,9 @@ class cohort_sync_importer extends base_csv_importer {
      * @return array|string[]
      */
     public function list_required_headers() {
-        return array(
-            'courseid', 'cohort_idnumber', 'role_shortname'
-        );
+        return [
+            'courseid', 'cohort_idnumber', 'role_shortname',
+        ];
     }
 
     /**
@@ -284,8 +284,7 @@ class cohort_sync_importer extends base_csv_importer {
         $DB->commit_delegated_transaction($this->currenttransaction);
         // Now launch update for course sync.
         $cohortsync = new sync_all_course_cohort_enrol();
-        $cohortsync->set_blocking(true);
-        $cohortsync->set_custom_data(array('courses' => array_keys($this->coursestosync)));
+        $cohortsync->set_custom_data(['courses' => array_keys($this->coursestosync)]);
         manager::queue_adhoc_task($cohortsync);
     }
 }

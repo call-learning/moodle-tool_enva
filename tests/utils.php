@@ -42,7 +42,7 @@ class utils extends advanced_testcase {
     const USER_PER_COHORT = 10;
 
     /** @var array $users **/
-    public $users = array();
+    public $users = [];
 
     /**
      * Setup tests
@@ -53,12 +53,12 @@ class utils extends advanced_testcase {
         global $DB;
         $this->resetAfterTest();
         // Setup custom profile fields.
-        $dataset = $this->dataset_from_files(array(
+        $dataset = $this->dataset_from_files([
                 'cohort' => __DIR__ . '/fixtures/cohort.csv',
                 'course' => __DIR__ . '/fixtures/course.csv',
                 'user_info_field' => __DIR__ . '/fixtures/user_info_field.csv',
-                'role' => __DIR__ . '/fixtures/role.csv'
-            )
+                'role' => __DIR__ . '/fixtures/role.csv',
+            ]
         );
         $dataset->to_database();
 
@@ -85,7 +85,7 @@ class utils extends advanced_testcase {
         global $DB;
 
         $user = $this->getDataGenerator()->create_user();
-        $cohort = $DB->get_record('cohort', array('idnumber' => $cohortidnumber));
+        $cohort = $DB->get_record('cohort', ['idnumber' => $cohortidnumber]);
         cohort_add_member($cohort->id, $user->id);
         return $user;
     }

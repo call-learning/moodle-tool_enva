@@ -74,8 +74,8 @@ class group_sync_importer extends base_csv_importer {
         foreach ($groups as $g) {
             if ($shouldpurge) {
                 // Purge groups with the same names that do not have any user in it.
-                $othergroupssamename = $DB->get_records('groups', array('courseid' => $course->id, 'name' => $g));
-                $othergroupssameid = $DB->get_records('groups', array('courseid' => $course->id, 'idnumber' => $g));
+                $othergroupssamename = $DB->get_records('groups', ['courseid' => $course->id, 'name' => $g]);
+                $othergroupssameid = $DB->get_records('groups', ['courseid' => $course->id, 'idnumber' => $g]);
                 $allgroups = array_merge($othergroupssamename, $othergroupssameid);
                 foreach ($allgroups as $grouptodelete) {
                     $gmember = groups_get_members($grouptodelete->id);
@@ -89,9 +89,9 @@ class group_sync_importer extends base_csv_importer {
             $newgroupdata->idnumber = $g;
             $newgroupdata->courseid = $course->id;
             $newgroupdata->description = $g . self::GROUP_SYNC_ENROL_SUFFIX;
-            $prevgroup = $DB->get_record('groups', array('courseid' => $course->id, 'name' => $g));
+            $prevgroup = $DB->get_record('groups', ['courseid' => $course->id, 'name' => $g]);
             if (!$prevgroup) {
-                $prevgroup = $DB->get_record('groups', array('courseid' => $course->id, 'idnumber' => $g));
+                $prevgroup = $DB->get_record('groups', ['courseid' => $course->id, 'idnumber' => $g]);
             }
             if ($prevgroup) {
                 $newgroupdata = (object) array_merge((array) $prevgroup, (array) $newgroupdata);
@@ -122,7 +122,7 @@ class group_sync_importer extends base_csv_importer {
             return null;
         }
         $groups = $this->get_groups($row);
-        return array($course, $groups);
+        return [$course, $groups];
     }
 
     /**
@@ -135,7 +135,7 @@ class group_sync_importer extends base_csv_importer {
     protected function get_course($row) {
         global $DB;
         $courseid = $this->get_column_data($row, 'courseid');
-        return $DB->get_record('course', array('id' => $courseid));
+        return $DB->get_record('course', ['id' => $courseid]);
     }
 
     /**
@@ -175,9 +175,9 @@ class group_sync_importer extends base_csv_importer {
      * @return array|string[]
      */
     public function list_required_headers() {
-        return array(
-            'courseid', 'groups'
-        );
+        return [
+            'courseid', 'groups',
+        ];
     }
 
 }

@@ -57,19 +57,19 @@ if ($options['help']) {
     cli_writeln($usage);
     exit(2);
 }
-$possiblefunctions = array('print_export_cohorts', 'print_yearone_users_with_empty_data');
+$possiblefunctions = ['print_export_cohorts', 'print_yearone_users_with_empty_data'];
 
 if (isset($options['deletedusers'])) {
     global $DB;
     $sql = "SELECT DISTINCT qas.id
-             FROM {question_attempt_steps} qas 
+             FROM {question_attempt_steps} qas
              LEFT JOIN {user} u ON u.id = qas.userid WHERE u.id IS NULL OR u.deleted = 1";
     $rs = $DB->get_recordset_sql($sql);
     cli_writeln('Deleting question_attempt_steps for deleted users');
     foreach ($rs as $record) {
         cli_write('.');
-        $DB->delete_records('question_attempt_steps', array('id' => $record->id));
-        $DB->delete_records('question_attempt_step_data', array('attemptstepid' => $record->id));
+        $DB->delete_records('question_attempt_steps', ['id' => $record->id]);
+        $DB->delete_records('question_attempt_step_data', ['attemptstepid' => $record->id]);
     }
     $rs->close();
 }

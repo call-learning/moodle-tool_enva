@@ -1,5 +1,5 @@
 "id","name","shortname","description","sortorder","archetype"
-"28","Publicateur de cours","secretaire","<p>Publicateur de cours</p>","10","editingteacher"
+"28","Publicateur de cours","secretaire","<p>Publicateur de cours</p>","15","editingteacher"
 "36","Responsable de cours","responsablecourse","<p>Responsable de cours</p>","20","editingteacher"
 "38","Étudiant invité","student_invite","<p>Etudiant invité</p>","30","student"
 "39","Enseignant invité","enseignant_invite","<p>enseignant invité</p>","40","student"

@@ -24,13 +24,13 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-$messageproviders = array(
+$messageproviders = [
     // Notify admin when synchronisation is done.
-    'syncfinished' => array(
+    'syncfinished' => [
         'capability' => 'tool/enva:managecohortsync',
-        'defaults' => array(
+        'defaults' => [
             'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
-            'email' => MESSAGE_PERMITTED
-        ),
-    ),
-);
+            'email' => MESSAGE_PERMITTED,
+        ],
+    ],
+];

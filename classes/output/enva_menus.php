@@ -53,11 +53,11 @@ class enva_menus implements renderable {
         $rooturl = $PAGE->url->out_omit_querystring();
         return [
             (object) [
-                'url' => new moodle_url($rooturl, array('action' => 'downloademptysurvey')),
+                'url' => new moodle_url($rooturl, ['action' => 'downloademptysurvey']),
                 'title' => get_string('downloademptysurvey', 'tool_enva'),
             ],
             (object) [
-                'url' => new moodle_url($rooturl, array('action' => 'deletesurveyinfo')),
+                'url' => new moodle_url($rooturl, ['action' => 'deletesurveyinfo']),
                 'title' => get_string('deletesurveyinfo', 'tool_enva'),
             ],
             // The deleteyearoneemptysurvey Disabled for now.

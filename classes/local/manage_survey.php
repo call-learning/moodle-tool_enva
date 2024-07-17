@@ -78,7 +78,7 @@ class manage_survey {
         $rs = $DB->get_recordset_sql($sql, $params);
         $csvexport = new csv_export_writer();
         $csvexport->set_filename($filename ? $filename : 'emptydata.csv');
-        $csvexport->add_data(array(
+        $csvexport->add_data([
             'userid',
             'username',
             'email',
@@ -86,8 +86,8 @@ class manage_survey {
             'firstname',
             'cohort',
             'customfieldname',
-            'userinfodataid'
-        ));
+            'userinfodataid',
+        ]);
         foreach ($rs as $res) {
             $csvexport->add_data((array) $res);
         }
@@ -114,7 +114,7 @@ class manage_survey {
 				LEFT JOIN {cohort} c ON cm.cohortid = c.id
                 WHERE uid.data=\"\" AND c.name = :yearonename AND ufd.id {$sqlfieldid}";
 
-        return array($sqlquery, array_merge($paramsfieldid, array('yearonename' => 'A1')));
+        return [$sqlquery, array_merge($paramsfieldid, ['yearonename' => 'A1'])];
     }
 
     /**
@@ -132,7 +132,7 @@ class manage_survey {
         list($sqlcohortid, $paramscohortid) = $DB->get_in_or_equal($studentcohortsid, SQL_PARAMS_NAMED, 'pcohort');
         list($sqlfieldid, $paramsfieldid) = $DB->get_in_or_equal($selecteduserfields, SQL_PARAMS_NAMED, 'pfield');
 
-        return array($sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid);
+        return [$sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid];
     }
 
     // CLI Tools.
@@ -202,7 +202,7 @@ class manage_survey {
                     $userdatafield->data = self::ENVA_SURVEY_DUMMY_DATA;
                     $userdatafield->dataformat = '0';
                     $userdatafield->fieldid = $fieldid;
-                    $exists = $DB->get_record('user_info_data', array('userid' => $userid, 'fieldid' => $fieldid));
+                    $exists = $DB->get_record('user_info_data', ['userid' => $userid, 'fieldid' => $fieldid]);
                     if (!$exists) {
                         $DB->insert_record('user_info_data', $userdatafield);
                     } else {
