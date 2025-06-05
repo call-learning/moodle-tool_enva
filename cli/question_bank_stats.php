@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_question\local\bank\question_version_status;
+
 define('CLI_SCRIPT', true);
 
 require(__DIR__ . '/../../../../config.php');
@@ -33,40 +35,37 @@ require_once($CFG->dirroot . '/question/engine/bank.php');
 $usage = "Show a list of the question bank and stats through the right 4.x API.
 
 Usage:
-    # php question_bank_unused_purge.php
+    # php question_bank_stats.php
 
 Options:
     -c --courseid=<courseid>    Course ID to delete question bank entries from.
-    -t --categoryid=<categoryid> Category ID to list questions from.
-    -o --olderthan=<timestamp>  Timestamp to filter questions older than this value (default: last 6 months).
     -a --allversions            Retrieve all versions of questions, not just the latest.
     -h --help                   Print this help.
-    
 ";
 
 list($options, $unrecognised) = cli_get_params([
     'courseid' => null,
-    'categoryid' => null,
-    'olderthan' => time() - YEARSECS / 2, // Default about last 6 month.
-    'allversions' => false, // Retrieve all versions of questions, not just the latest.
+    'list' => true, // This option is not used in this script but can be used for future enhancements.
+    'allversions' => null, // Retrieve all versions of questions, not just the latest.
+    'categoryid' => null, // Category ID to list questions from.
     'help' => false,
 ], [
     'c' => 'courseid',
-    't' => 'categoryid',
-    'o' => 'olderthan',
+    'l' => 'list',
     'a' => 'allversions',
+    't' => 'categoryid',
     'h' => 'help',
 ]);
 $courseid = $options['courseid'] ?? null;
+$categoryid = $options['categoryid'] ?? null;
 $allversions = $options['allversions'] ?? false;
-
-// Prepare the query to select IDs for deletion
+// Prepare the query to select IDs for deletion.
 if (!empty($courseid)) {
     $contextid = context_course::instance($courseid)->id;
-    $questioncategories = \qbank_managecategories\helper::get_categories_for_contexts($contextid);
-} else if (!empty($options['categoryid'])) {
+    $questioncategories = \qbank_managecategories\helper::get_categories_for_contexts("$contextid");
+} else if (!empty($categoryid)) {
     global $DB;
-    $questioncategories = $DB->get_records('question_categories', ['id' => $options['categoryid']]);
+    $questioncategories = $DB->get_records('question_categories', ['id' => $categoryid]);
 } else {
     cli_error("No course ID or category ID provided.");
 }
@@ -76,34 +75,28 @@ if (empty($questioncategories)) {
     exit(0);
 }
 $finder = question_bank::get_finder();
-$notafter = $options['olderthan'] ?? (time() - (YEARSECS / 2)); // Default about last 6 months.
-cli_writeln("Listing questions for course ID $courseid, older than " .
-    date('d/m/Y H:i:s', $notafter) . ", ready for deletion.");
-
+$questioncount = 0;
+$notreadycount = 0;
+$allquesstionscount = 0;
 foreach ($questioncategories as $category) {
+    $qcparams = ['categoryid' => $category->id];
     if ($allversions) {
         $questionsid = \tool_enva\utils::get_questions_from_categories([$category->id]);
     } else {
         $questionsid = $finder->get_questions_from_categories([$category->id], "");
     }
-    cli_writeln("Listing questions for category ID {$category->id} ({$category->name}) in course ID $courseid:" .
-        count($questionsid) . " questions found.");
-    foreach ($questionsid as $questionid) {
-        ['question' => $question, 'usagecount' => $usagecount, 'status' => $status] =
-            \tool_enva\utils::purge_question($questionid, $notafter);
-        cli_writeln("Question ID: {$question->id}, Name: {$question->name}, Usage Count: $usagecount");
-        if ($status == 'ok') {
-            cli_writeln("Question ID: {$question->id} is not in use and older than " .
-                date('d/m/Y H:i:s', $notafter) . ", ready for deletion.");
-        } else {
-            if ($status == 'toorecent') {
-                $lastime = !empty($question->timemodified) ? date('d/m/Y H:i:s', $question->timemodified) : 'N/A';
-                cli_writeln("Question ID: {$question->id} is not in use but too recent ($lastime), skipping deletion.");
-            } else {
-                cli_writeln("Question ID: {$question->id} is in use, skipping deletion ($status).");
-            }
-
-        }
-    }
+    $questions = array_map(function($id) {
+        return question_bank::load_question_data($id);
+    }, $questionsid);
+    $notquestions = array_filter($questions, function($question) {
+        return $question->status !== question_version_status::QUESTION_STATUS_READY;
+    });
+    $allquestions = count(tool_enva\utils::get_questions_from_categories([$category->id], false));
+    cli_writeln("{$category->id} ({$category->name}),". count($questions) . ", " . count($notquestions). ", $allquestions");
+    $questioncount += count($questions);
+    $notreadycount += count($notquestions);
+    $allquesstionscount += $allquestions;
 }
-cli_writeln("Finished listing questions for course ID $courseid.");
+cli_writeln("Total questions listed: $questioncount");
+cli_writeln("Total no ready questions: $notreadycount");
+cli_writeln("Total questions in all categories (root and non root): $allquesstionscount");

@@ -45,18 +45,23 @@ Options:
 list($options, $unrecognised) = cli_get_params([
     'courseid' => null,
     'categoryid' => null,
+    'list' => true, // This option is not used in this script but can be used for future enhancements.
+    'allversions' => false, // Retrieve all versions of questions, not just the latest.
     'help' => false,
 ], [
     'c' => 'courseid',
     't' => 'categoryid',
+    'l' => 'list',
+    'a' => 'allversions',
     'h' => 'help',
 ]);
 $courseid = $options['courseid'] ?? null;
+$allversions = $options['allversions'] ?? false;
 
 // Prepare the query to select IDs for deletion
 if (!empty($courseid)) {
     $contextid = context_course::instance($courseid)->id;
-    $questioncategories = \qbank_managecategories\helper::get_categories_for_contexts($contextid);
+    $questioncategories = \qbank_managecategories\helper::get_categories_for_contexts("$contextid");
 } else if (!empty($options['categoryid'])) {
     global $DB;
     $questioncategories = $DB->get_records('question_categories', ['id' => $options['categoryid']]);
@@ -69,15 +74,34 @@ if (empty($questioncategories)) {
     exit(0);
 }
 $finder = question_bank::get_finder();
-
+$questioncount = 0;
+$unusedcount = 0;
+cli_writeln("Listing questions for course ID $courseid, in categories: " .
+    implode("\n", array_map(function($cat) {
+        return "$cat->name($cat->id)";
+    }, $questioncategories)) . ".");
 foreach ($questioncategories as $category) {
-    $questions = $finder->get_questions_from_categories([$category->id], "");
+    if ($allversions) {
+        $questionsid = \tool_enva\utils::get_questions_from_categories([$category->id]);
+    } else {
+        $questionsid = $finder->get_questions_from_categories([$category->id], "");
+    }
     cli_writeln("Listing questions for category ID {$category->id} ({$category->name}) in course ID $courseid:" .
-        count($questions) . " questions found.");
-    foreach ($questions as $questionid) {
+        count($questionsid) . " questions found.");
+    foreach ($questionsid as $questionid) {
         $question = question_bank::load_question_data($questionid);
-        $usageCount = \qbank_usage\helper::get_question_entry_usage_count($question, true);
-        cli_writeln("Question ID: {$question->id}, Name: {$question->name}, Usage Count: $usageCount");
+        $usagecount = \qbank_usage\helper::get_question_entry_usage_count($question, true);
+        $timemodified = !empty($question->timemodified) ? date('d/m/Y H:i:s', $question->timemodified) : 'N/A';
+        $timecreated = !empty($question->timecreated) ? date('d/m/Y H:i:s', $question->timecreated) : 'N/A';
+        cli_writeln("Question ID: {$question->id}, Name: {$question->name}, Usage Count: $usagecount, " .
+            "Category: {$category->name}, Time Modified: $timemodified, Time Created: $timecreated," .
+            " Status: {$question->status}, Type: {$question->qtype}");
+        $questioncount++;
+        if ($usagecount == 0) {
+            $unusedcount++;
+        }
     }
 }
+cli_writeln("Total questions listed: $questioncount");
+cli_writeln("Total unused questions ready for deletion: $unusedcount");
 cli_writeln("Finished listing questions for course ID $courseid.");
