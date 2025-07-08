@@ -42,12 +42,14 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @copyright  2020 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @coversDefaultClass \tool_enva\local\csv\group_sync_importer
  */
-class tool_enva_groups_sync_test extends utils {
+final class tool_enva_groups_sync_test extends utils {
     /**
      * A simple import test
+     * @covers ::process_import
      */
-    public function test_csv_import_simple() {
+    public function test_csv_import_simple(): void {
         $this->resetAfterTest(true);
         // Now do the group sync import.
         $importer = new group_sync_importer(file_get_contents(__DIR__ . '/fixtures/group_sync_example.csv'));
@@ -100,8 +102,9 @@ class tool_enva_groups_sync_test extends utils {
 
     /**
      * A simple import with purged
+     * @covers ::process_import
      */
-    public function test_csv_import_purged() {
+    public function test_csv_import_purged(): void {
         $this->resetAfterTest(true);
 
         // Create existing groups.
@@ -140,8 +143,9 @@ class tool_enva_groups_sync_test extends utils {
 
     /**
      * Existing group modification
+     * @covers ::process_import
      */
-    public function test_csv_import_purged_with_existing_modified() {
+    public function test_csv_import_purged_with_existing_modified(): void {
         global $DB;
         $this->resetAfterTest(true);
 

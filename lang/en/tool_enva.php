@@ -22,11 +22,32 @@
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-$string['pluginname'] = 'ENVA Utils/Tools';
-
-// Tools.
-$string['managesurvey'] = 'Outils questionnaire avenir professionnel';
+$string['cannotopenimporter'] = 'Cannot open Importer';
+$string['cohortsyncfile:def'] = 'Cohort sync definition file';
+$string['cohortsyncfile:def_help'] = 'Configuration file that will match a course, a cohort and a role. Minimum of 3 columns
+courseid, cohort_idnumber et role_shortname';
+$string['csvdelimiter'] = 'CSV Delimiter';
+$string['currentimportprogress'] = 'Current import progress';
+$string['deletesurveyinfo'] = 'Delete Survey Data';
+$string['deletesurveyinfoconfirm'] = 'Confirm Survey Data Deletion';
+$string['deleteyearoneemptysurvey'] = 'Delete empty year one survey';
+$string['deleteyearoneemptysurveyconfirm'] = 'Confirm Empty Survey Data for year one deletion';
+$string['downloademptysurvey'] = 'Download Student with empty survey data';
+$string['emptyyearonesurveydatatask'] = 'ENVA: Delete empty survey data Task';
+$string['encoding'] = 'CSV Encoding';
+$string['groupsyncfile:def'] = 'Group definition file';
+$string['groupsyncfile:def_help'] = 'Configuration file that will match a course and a set of groups. Minimum of 2 columns
+courseid, groups. Groups contains a list of group names that if they don\'t exist will be created';
+$string['headernotpresent'] = 'Header not present ({$a})';
+$string['import'] = 'Import';
+$string['importcohortsync:error:cannotaddinstance'] = 'Cannot add cohort sync instance  (Line:{$a})';
+$string['importcohortsync:error:cannotupdateinstance'] = 'Cannot update cohort sync instance (Line:{$a})';
+$string['importcohortsync:error:wrongcohort'] = 'Wrong cohort (Line:{$a})';
+$string['importcohortsync:error:wrongcourse'] = 'Wrong course (Line:{$a})';
+$string['importcohortsync:error:wrongrole'] = 'Wrong role (Line:{$a})';
+$string['importgroupsync:error:cannotaddinstance'] = 'Cannot add group instance (Line:{$a})';
+$string['importgroupsync:error:wrongcourse'] = 'Wrong course (Line:{$a})';
+$string['invalidimportfile'] = 'Invalid import file ({$a})';
 $string['managecohortsync'] = 'Template Import - Cohort and Course';
 $string['managecohortsync_desc'] = 'This tool will allow to import a CSV file matching courses and cohorts and roles and so
  to rebuild the links between courses, cohortes and roles via cohort sync. The file format is
@@ -36,45 +57,20 @@ $string['managegroupsync'] = 'Template Import - Groups in course';
 $string['managegroupsync_desc'] = 'This tool will allow to import a CSV file matching courses and groups. The file format is
   <pre>courseid,groups</pre> with courseid, the course id number, groups a list of courses separated by comma.
   One line per course.';
-$string['downloademptysurvey'] = 'Download Student with empty survey data';
-$string['deletesurveyinfo'] = 'Delete Survey Data';
-$string['deleteyearoneemptysurvey'] = 'Delete empty year one survey';
-$string['deletesurveyinfoconfirm'] = 'Confirm Survey Data Deletion';
-$string['deleteyearoneemptysurveyconfirm'] = 'Confirm Empty Survey Data for year one deletion';
-$string['emptyyearonesurveydatatask'] = 'ENVA: Delete empty survey data Task';
-
-$string['groupsyncfile:def'] = 'Group definition file';
-$string['groupsyncfile:def_help'] = 'Configuration file that will match a course and a set of groups. Minimum of 2 columns
-courseid, groups. Groups contains a list of group names that if they don\'t exist will be created';
-$string['cohortsyncfile:def'] = 'Cohort sync definition file';
-$string['cohortsyncfile:def_help'] = 'Configuration file that will match a course, a cohort and a role. Minimum of 3 columns
-courseid, cohort_idnumber et role_shortname';
-$string['tool/enva:managesurvey'] = 'Can manage cohort content';
-$string['tool/enva:managecohortsync'] = 'Can manage cohort synchronisation';
-$string['tool/enva:managegroupsync'] = 'Can manage group synchronisation';
-$string['csvdelimiter'] = 'CSV Delimiter';
-$string['encoding'] = 'CSV Encoding';
-$string['import'] = 'Import';
-$string['syncallcohortcourses'] = 'Sync all cohort course';
-$string['invalidimportfile'] = 'Invalid import file ({$a})';
-$string['headernotpresent'] = 'Header not present ({$a})';
-$string['currentimportprogress'] = 'Current import progress';
-$string['cannotopenimporter'] = 'Cannot open Importer';
-$string['importgroupsync:error:cannotaddinstance'] = 'Cannot add group instance (Line:{$a})';
-$string['importgroupsync:error:wrongcourse'] = 'Wrong course (Line:{$a})';
-$string['importcohortsync:error:cannotaddinstance'] = 'Cannot add cohort sync instance  (Line:{$a})';
-$string['importcohortsync:error:cannotupdateinstance'] = 'Cannot update cohort sync instance (Line:{$a})';
-$string['importcohortsync:error:wrongcourse'] = 'Wrong course (Line:{$a})';
-$string['importcohortsync:error:wrongcohort'] = 'Wrong cohort (Line:{$a})';
-$string['importcohortsync:error:wrongrole'] = 'Wrong role (Line:{$a})';
-$string['messageprovider:syncfinished'] = 'Synchronisation of cohorts finished';
-$string['message:syncallcohortfailed:title'] = 'Synchronising all cohort failed';
+$string['managesurvey'] = 'Outils questionnaire avenir professionnel';
 $string['message:syncallcohortfailed'] = 'The process of synchronising all cohort failed. Please
 check the output of php enrol/cohort/cli/sync.php. {$a->error} - ({$a->trace})';
-$string['message:syncallcohortok:title'] = 'Synchronising all cohort succeed.';
+$string['message:syncallcohortfailed:title'] = 'Synchronising all cohort failed';
 $string['message:syncallcohortok'] = 'The process of synchronising all cohort was a success.';
+$string['message:syncallcohortok:title'] = 'Synchronising all cohort succeed.';
+$string['messageprovider:syncfinished'] = 'Synchronisation of cohorts finished';
+$string['pluginname'] = 'ENVA Utils/Tools';
 $string['settings:cohortstoreset'] = 'Cohort to reset for survey';
 $string['settings:cohortstoreset_help'] = 'Numerical ID separated by comma, which allow to specify cohort to be considered
 when managing the entry survey';
-$string['sync:enrolmentname'] = 'toolenva::{$a->cohortname}({$a->rolename})';
 $string['surveyparameters'] = 'Survey parameters';
+$string['sync:enrolmentname'] = 'toolenva::{$a->cohortname}({$a->rolename})';
+$string['syncallcohortcourses'] = 'Sync all cohort course';
+$string['tool/enva:managecohortsync'] = 'Can manage cohort synchronisation';
+$string['tool/enva:managegroupsync'] = 'Can manage group synchronisation';
+$string['tool/enva:managesurvey'] = 'Can manage cohort content';

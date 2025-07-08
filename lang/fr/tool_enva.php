@@ -22,11 +22,34 @@
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-$string['pluginname'] = 'Outils ENVA';
-
-// Tools.
-$string['managesurvey'] = 'Outils questionnaire avenir professionnel';
+$string['cannotopenimporter'] = 'Ne peux ouvrir l\'outil d\'importation';
+$string['cohortsyncfile:def'] = 'Fichier de défition des synchronisation cohorte';
+$string['cohortsyncfile:def_help'] = 'Fichier de défition des synchronisation, doit contenir la correspondance entre
+les cours, cohortes et roles. Il a au minimum 3 colonnes courseid, cohort_idnumber et role_shortname';
+$string['csvdelimiter'] = 'Délimiteur CSV';
+$string['currentimportprogress'] = 'Progression';
+$string['deletesurveyinfo'] = 'Effacer les données d\'enquête';
+$string['deletesurveyinfoconfirm'] = 'Confirmer l\'effacement';
+$string['deleteyearoneemptysurvey'] = 'Effacer les résultats d\'enquêtes vides (année 1)';
+$string['deleteyearoneemptysurveyconfirm'] = 'Confirmer l\'effacement';
+$string['downloademptysurvey'] = 'Télécharger les étudiants avec une réponse vide à l\'enquête';
+$string['emptyyearonesurveydatatask'] = 'ENVA: Tâche de purge des résultats d\'enquête vides';
+$string['encoding'] = 'Encodage CSV';
+$string['groupsyncfile:def'] = 'Fichier de défition des groupes';
+$string['groupsyncfile:def_help'] = 'Fichier de défition des synchronisation, doit contenir la correspondance entre un course et
+ un ensemble de groupes. 2 colunnes à minima: courseid, groups. Groups contient une liste séparée par une virgule, contenant
+ les groupes qui doivent être créés dans ce cours';
+$string['headernotpresent'] = 'Entête non présent ({$a})';
+$string['import'] = 'Importation';
+$string['importcohortsync:error:cannotaddinstance'] = 'Ne peut ajouter une instance de synchronisation cohorte (Line:{$a})';
+$string['importcohortsync:error:cannotupdateinstance'] = 'Ne peut modifier une instance de synchronisation cohorte (Line:{$a})';
+$string['importcohortsync:error:wrongcohort'] = 'Mauvaise cohorte (Line:{$a})';
+$string['importcohortsync:error:wrongcourse'] = 'Mauvais cours (Line:{$a})';
+$string['importcohortsync:error:wrongrole'] = 'Mauvais role (Line:{$a})';
+$string['importgroupsync:error:cannotaddinstance'] = 'Ne peux ajouter une instance de groupe (Line:{$a})';
+$string['importgroupsync:error:wrongcourse'] = 'Mauvais cours (Line:{$a})';
+$string['importgroupsync:error:wronggroups'] = 'Mauvais groupe (Line:{$a})';
+$string['invalidimportfile'] = 'Fichier d\'importation invalide ({$a})';
 $string['managecohortsync'] = 'Importation maquette - cohortes et cours';
 $string['managecohortsync_desc'] = 'Cet outil permet d\'importer un fichier CSV contenant la correspondance entre cohortes et
 cours et donc de reconstruire la correspondance entre cours et cohorts via le mode d\'inscription des cohortes. Le format du
@@ -36,42 +59,15 @@ $string['managegroupsync'] = 'Importation maquette - groupes par cours';
 $string['managegroupsync_desc'] = 'Cet outil permet d\'importer un fichier CSV contenant la correspondance entre cours et
 groupes. Le format du fichier est <pre>courseid,groups</pre> avec courseid, le numéro (nombre entier) du cours, groups le nom
  des groupes séparés par une virgule. Une ligne par cours.';
-$string['downloademptysurvey'] = 'Télécharger les étudiants avec une réponse vide à l\'enquête';
-$string['deletesurveyinfo'] = 'Effacer les données d\'enquête';
-$string['deleteyearoneemptysurvey'] = 'Effacer les résultats d\'enquêtes vides (année 1)';
-$string['deletesurveyinfoconfirm'] = 'Confirmer l\'effacement';
-$string['deleteyearoneemptysurveyconfirm'] = 'Confirmer l\'effacement';
-$string['emptyyearonesurveydatatask'] = 'ENVA: Tâche de purge des résultats d\'enquête vides';
-
-$string['groupsyncfile:def'] = 'Fichier de défition des groupes';
-$string['groupsyncfile:def_help'] = 'Fichier de défition des synchronisation, doit contenir la correspondance entre un course et
- un ensemble de groupes. 2 colunnes à minima: courseid, groups. Groups contient une liste séparée par une virgule, contenant
- les groupes qui doivent être créés dans ce cours';
-$string['cohortsyncfile:def'] = 'Fichier de défition des synchronisation cohorte';
-$string['cohortsyncfile:def_help'] = 'Fichier de défition des synchronisation, doit contenir la correspondance entre
-les cours, cohortes et roles. Il a au minimum 3 colonnes courseid, cohort_idnumber et role_shortname';
-$string['tool/enva:managesurvey'] = 'Peut gerer les outils divers';
-$string['tool/enva:managegroupsync'] = 'Peut gérer la synchronisation des groupes';
-$string['tool/enva:managecohortsync'] = 'Peut gérer la synchronisation des cohortes';
-$string['csvdelimiter'] = 'Délimiteur CSV';
-$string['encoding'] = 'Encodage CSV';
-$string['import'] = 'Importation';
-$string['syncallcohortcourses'] = 'Synchronise toutes les cohortes de cours';
-$string['invalidimportfile'] = 'Fichier d\'importation invalide ({$a})';
-$string['headernotpresent'] = 'Entête non présent ({$a})';
-$string['currentimportprogress'] = 'Progression';
-$string['cannotopenimporter'] = 'Ne peux ouvrir l\'outil d\'importation';
-$string['importgroupsync:error:cannotaddinstance'] = 'Ne peux ajouter une instance de groupe (Line:{$a})';
-$string['importgroupsync:error:wrongcourse'] = 'Mauvais cours (Line:{$a})';
-$string['importgroupsync:error:wronggroups'] = 'Mauvais groupe (Line:{$a})';
-$string['importcohortsync:error:cannotaddinstance'] = 'Ne peut ajouter une instance de synchronisation cohorte (Line:{$a})';
-$string['importcohortsync:error:cannotupdateinstance'] = 'Ne peut modifier une instance de synchronisation cohorte (Line:{$a})';
-$string['importcohortsync:error:wrongcourse'] = 'Mauvais cours (Line:{$a})';
-$string['importcohortsync:error:wrongcohort'] = 'Mauvaise cohorte (Line:{$a})';
-$string['importcohortsync:error:wrongrole'] = 'Mauvais role (Line:{$a})';
+$string['managesurvey'] = 'Outils questionnaire avenir professionnel';
 $string['messageprovider:syncfinished'] = 'Synchronisation des cohortes terminée';
+$string['pluginname'] = 'Outils ENVA';
 $string['settings:cohortstoreset'] = 'Cohortes a remettre à zéro pour les questionnaires avenir professionnel';
 $string['settings:cohortstoreset_help'] = 'Identifiants numériques séparés par des virgules qui permettent de spécifier les
  cohortes concernées par les questionnaires avenir professionnel';
-$string['sync:enrolmentname'] = 'outilenva::{$a->cohortname}({$a->rolename})';
 $string['surveyparameters'] = 'Paramètres questionnaire avenir professionnel';
+$string['sync:enrolmentname'] = 'outilenva::{$a->cohortname}({$a->rolename})';
+$string['syncallcohortcourses'] = 'Synchronise toutes les cohortes de cours';
+$string['tool/enva:managecohortsync'] = 'Peut gérer la synchronisation des cohortes';
+$string['tool/enva:managegroupsync'] = 'Peut gérer la synchronisation des groupes';
+$string['tool/enva:managesurvey'] = 'Peut gerer les outils divers';

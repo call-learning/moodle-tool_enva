@@ -39,7 +39,6 @@ Options:
     -c --courseid=<courseid>    Course ID to delete question bank entries from.
     -t --categoryid=<categoryid> Category ID to list questions from.
     -h --help                   Print this help.
-    
 ";
 
 list($options, $unrecognised) = cli_get_params([
@@ -58,7 +57,7 @@ list($options, $unrecognised) = cli_get_params([
 $courseid = $options['courseid'] ?? null;
 $allversions = $options['allversions'] ?? false;
 
-// Prepare the query to select IDs for deletion
+// Prepare the query to select IDs for deletion.
 if (!empty($courseid)) {
     $contextid = context_course::instance($courseid)->id;
     $questioncategories = \qbank_managecategories\helper::get_categories_for_contexts("$contextid");

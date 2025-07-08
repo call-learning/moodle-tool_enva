@@ -41,12 +41,14 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @copyright  2020 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @coversDefaultClass \tool_enva\local\csv\cohort_sync_importer
  */
-class tool_enva_cohort_sync_test extends utils {
+final class tool_enva_cohort_sync_test extends utils {
     /**
      * Simple import
+     * @covers ::process_import
      */
-    public function test_csv_import_simple() {
+    public function test_csv_import_simple(): void {
         global $DB;
         $this->resetAfterTest(true);
         $messagesink = $this->redirectMessages();

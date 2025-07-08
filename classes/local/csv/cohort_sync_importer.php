@@ -59,15 +59,19 @@ class cohort_sync_importer extends base_csv_importer {
     /**
      * Cohort_sync_importer constructor.
      *
-     * @param null $text
-     * @param null $encoding
-     * @param null $delimiter
-     * @param int $importid
-     * @param string $type
-     * @throws coding_exception
+     * @param string|null $text The raw csv text.
+     * @param string|null $encoding The encoding of the csv file.
+     * @param string|null $delimiter The specified delimiter for the file.
+     * @param int $importid The id of the csv import.
+     * @param string $type the import type
      */
-    public function __construct($text = null, $encoding = null, $delimiter = null,
-        $importid = 0, $type = 'tool_enva_cohort_sync_csv_import') {
+    public function __construct(
+        ?string $text = null,
+        ?string $encoding = null,
+        ?string $delimiter = null,
+        int $importid = 0,
+        string $type = 'tool_enva_cohort_sync_csv_import'
+    ) {
         parent::__construct($text, $encoding, $delimiter, $importid, $type);
         $this->cohortsyncenrolplugin = enrol_get_plugin(self::COHORT_SYNC_ENROL_PLUGIN_NAME);
     }
@@ -92,14 +96,19 @@ class cohort_sync_importer extends base_csv_importer {
             ['courseid' => $course->id,
                 'enrol' => self::COHORT_SYNC_ENROL_PLUGIN_NAME,
                 'roleid' => $role->id,
-                'customint1' => $cohort->id, ]);
+                'customint1' => $cohort->id,
+            ]
+        );
         // Case we have several instances with the same cohort sync.
         // We disable all of them and we will work with the last one.
         if ($instances && count($instances) > 1) {
             foreach ($instances as $inst) {
                 $this->update_enrol_instance($inst,
-                    (object) ['name' => self::create_enrolmnent_name($cohort->name, $role->name),
-                        'status' => ENROL_INSTANCE_DISABLED, ]);
+                    (object) [
+                        'name' => self::create_enrolmnent_name($cohort->name, $role->name),
+                        'status' => ENROL_INSTANCE_DISABLED,
+                    ]
+                );
                 $instance = $inst;
             }
         } else {
@@ -119,8 +128,11 @@ class cohort_sync_importer extends base_csv_importer {
             }
         } else {
             if (!$this->update_enrol_instance($instance,
-                (object) ['name' => self::create_enrolmnent_name($cohort->name, $role->name),
-                    'status' => ENROL_INSTANCE_ENABLED, ])) {
+                (object) [
+                    'name' => self::create_enrolmnent_name($cohort->name, $role->name),
+                    'status' => ENROL_INSTANCE_ENABLED,
+                ]
+            )) {
                 $this->fail(get_string('importcohortsync:error:cannotupdateinstance', 'tool_enva', $rowindex));
                 return false;
             }
@@ -196,6 +208,25 @@ class cohort_sync_importer extends base_csv_importer {
     }
 
     /**
+     * Update instance of enrol plugin.
+     *
+     * @param object $instance
+     * @param object $data modified instance fields
+     * @return boolean
+     */
+    protected function update_enrol_instance($instance, $data) {
+        // Here we just update the plugin data. We will course enrolment later.
+        $parentpluginclass = (new ReflectionClass($this->cohortsyncenrolplugin))->getParentClass();
+        $addinstance = $parentpluginclass->getMethod('update_instance');
+        $result =
+            $addinstance->invokeArgs($this->cohortsyncenrolplugin, [$instance, $data]);
+        // We just add the plugin instance.
+        $this->coursestosync[$instance->courseid] = true; // Mak it as to be synced.
+
+        return $result;
+    }
+
+    /**
      * Create a human readable name for the enrolment name
      *
      * @param string $cohortname
@@ -213,10 +244,11 @@ class cohort_sync_importer extends base_csv_importer {
      * everything is setup.
      *
      * @param object $course
-     * @param array $fields instance fields
+     * @param array|null $fields instance fields
      * @return int id of new instance, null if can not be created
+     * @throws \ReflectionException
      */
-    protected function add_enrol_instance($course, array $fields = null) {
+    protected function add_enrol_instance($course, ?array $fields = null) {
         // Here we just create the new the plugin data. We will course enrolment later.
         $parentpluginclass = (new ReflectionClass($this->cohortsyncenrolplugin))->getParentClass();
         $addinstance = $parentpluginclass->getMethod('add_instance');
@@ -224,25 +256,6 @@ class cohort_sync_importer extends base_csv_importer {
             $addinstance->invokeArgs($this->cohortsyncenrolplugin, [$course, $fields]);
 
         $this->coursestosync[$course->id] = true; // Mak it as to be synced.
-
-        return $result;
-    }
-
-    /**
-     * Update instance of enrol plugin.
-     *
-     * @param object $instance
-     * @param object $data modified instance fields
-     * @return boolean
-     */
-    protected function update_enrol_instance($instance, $data) {
-        // Here we just update the plugin data. We will course enrolment later.
-        $parentpluginclass = (new ReflectionClass($this->cohortsyncenrolplugin))->getParentClass();
-        $addinstance = $parentpluginclass->getMethod('update_instance');
-        $result =
-            $addinstance->invokeArgs($this->cohortsyncenrolplugin, [$instance, $data]);
-        // We just add the plugin instance.
-        $this->coursestosync[$instance->courseid] = true; // Mak it as to be synced.
 
         return $result;
     }

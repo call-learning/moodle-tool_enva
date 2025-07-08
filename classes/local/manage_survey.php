@@ -150,10 +150,10 @@ class manage_survey {
             $allcohortsid = [];
             $cohortstoresetnames = get_config('tool_enva', 'cohortstoreset');
             if (!empty($cohortstoresetnames)) {
-                $cohortstoresetarray = array_map('static::remove_spaces_lowercase',
+                $cohortstoresetarray = array_map(static::remove_spaces_lowercase(...),
                     explode(',', $cohortstoresetnames));
                 // We need to match strings that can have been spaced out quite randomly, so no sql here.
-                $allcohorts = array_map('static::remove_spaces_lowercase',
+                $allcohorts = array_map(static::remove_spaces_lowercase(...),
                     $DB->get_records_menu('cohort', [], '', 'id,idnumber'));
                 $allcohortsid = array_intersect($allcohorts, $cohortstoresetarray);
             }

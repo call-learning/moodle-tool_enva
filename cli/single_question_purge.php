@@ -38,7 +38,6 @@ Usage:
 Options:
     -q --questionid=<courseid>    Course ID to delete question bank entries from.
     -h --help                   Print this help.
-    
 ";
 
 list($options, $unrecognised) = cli_get_params([
@@ -51,13 +50,13 @@ list($options, $unrecognised) = cli_get_params([
 ]);
 $courseid = $options['courseid'] ?? null;
 
-// Prepare the query to select IDs for deletion
+// Prepare the query to select IDs for deletion.
 if (!empty($options['questionid'])) {
     $questionid = $options['questionid'];
     $notafter = $options['olderthan'] ?? (time() - (YEARSECS / 2)); // Default about last 6 months.
-    ['question' => $question, 'usagecount' => $usageCount, 'status' => $status] =
+    ['question' => $question, 'usagecount' => $usagecount, 'status' => $status] =
         \tool_enva\utils::purge_question($questionid, $notafter);
-    cli_writeln("Question ID: {$question->id}, Name: {$question->name}, Usage Count: $usageCount, Status: $question->status, " .
+    cli_writeln("Question ID: {$question->id}, Name: {$question->name}, Usage Count: $usagecount, Status: $question->status, " .
         "Last Modified: " . date('d/m/Y H:i:s', $question->timemodified ?? 0));
     if ($status == 'ok') {
         cli_writeln("Question ID: {$question->id} is not in use and older than " .

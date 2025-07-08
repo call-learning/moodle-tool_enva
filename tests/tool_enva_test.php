@@ -40,12 +40,14 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @copyright  2020 CALL Learning
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @coversDefaultClass \tool_enva\local\manage_survey
  */
-class tool_enva_test extends utils {
+final class tool_enva_test extends utils {
     /**
      * Test deletion of survey info
+     * @covers ::delete_user_yearly_surveyinfo
      */
-    public function test_delete_user_surveyinfo() {
+    public function test_delete_user_surveyinfo(): void {
         $this->resetAfterTest(true);
         $useryearone = $this->users[0];
         $useryeartwo = $this->users[self::USER_PER_COHORT];
@@ -107,8 +109,9 @@ class tool_enva_test extends utils {
 
     /**
      * Test that we delete the survey info when empty (as string empty)
+     * @covers ::delete_user_surveyinfo_yearone_when_empty
      */
-    public function test_delete_user_surveyinfo_yearone_when_empty() {
+    public function test_delete_user_surveyinfo_yearone_when_empty(): void {
         $this->resetAfterTest(true);
         $useryearone = $this->users[0];
         $useryearonewithresponse = $this->users[1];

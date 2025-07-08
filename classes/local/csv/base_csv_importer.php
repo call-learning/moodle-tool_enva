@@ -58,14 +58,20 @@ abstract class base_csv_importer {
     /**
      * Constructor - parses the raw text for sanity.
      *
-     * @param string $text The raw csv text.
-     * @param string $encoding The encoding of the csv file.
-     * @param string $delimiter The specified delimiter for the file.
-     * @param string $importid The id of the csv import.
+     * @param string|null $text The raw csv text.
+     * @param string|null $encoding The encoding of the csv file.
+     * @param string|null $delimiter The specified delimiter for the file.
+     * @param int $importid The id of the csv import.
      * @param string $type the import type
      * @throws coding_exception
      */
-    public function __construct($text = null, $encoding = null, $delimiter = null, $importid = 0, $type = 'tool_enva_csv_import') {
+    public function __construct(
+        ?string $text = null,
+        ?string $encoding = null,
+        ?string $delimiter = null,
+        int $importid = 0,
+        string $type = 'tool_enva_csv_import'
+    ) {
 
         global $CFG, $DB;
 
