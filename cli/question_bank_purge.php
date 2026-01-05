@@ -30,16 +30,19 @@ global $CFG;
 require_once($CFG->libdir . '/clilib.php');
 require_once($CFG->dirroot . '/question/engine/bank.php');
 
-$usage = "Show a list of the question bank and stats through the right 4.x API.
+$usage = "Purge question bank entries for a given course or category.
+By default we only purge 'random' that are unused and older than 6 months.
+You can specify another type using --onlytype option, or 'all' to process all types
 
 Usage:
-    # php question_bank_unused_purge.php
+    # php question_bank_purge.php
 
 Options:
     -c --courseid=<courseid>    Course ID to delete question bank entries from.
     -t --categoryid=<categoryid> Category ID to list questions from.
     -o --olderthan=<timestamp>  Timestamp to filter questions older than this value (default: last 6 months).
     -a --allversions            Retrieve all versions of questions, not just the latest.
+    --onlytype=<questiontype>  Only process questions of this type (default: 'random').
     -h --help                   Print this help.
 
 ";
@@ -49,6 +52,7 @@ list($options, $unrecognised) = cli_get_params([
     'categoryid' => null,
     'olderthan' => time() - YEARSECS / 2, // Default about last 6 month.
     'allversions' => false, // Retrieve all versions of questions, not just the latest.
+    'onlytype' => 'random',
     'help' => false,
 ], [
     'c' => 'courseid',
@@ -60,6 +64,10 @@ list($options, $unrecognised) = cli_get_params([
 $courseid = $options['courseid'] ?? null;
 $allversions = $options['allversions'] ?? false;
 
+$onlytype = $options['onlytype'] ?: 'random';
+if ($onlytype === 'all') {
+    $onlytype = null; // All types.
+}
 // Prepare the query to select IDs for deletion.
 if (!empty($courseid)) {
     $contextid = context_course::instance($courseid)->id;
@@ -82,27 +90,32 @@ cli_writeln("Listing questions for course ID $courseid, older than " .
 
 foreach ($questioncategories as $category) {
     if ($allversions) {
-        $questionsid = \tool_enva\utils::get_questions_from_categories([$category->id]);
+        $questionsid = \tool_enva\utils::get_questions_from_categories([$category->id], false);
     } else {
         $questionsid = $finder->get_questions_from_categories([$category->id], "");
     }
     cli_writeln("Listing questions for category ID {$category->id} ({$category->name}) in course ID $courseid:" .
         count($questionsid) . " questions found.");
     foreach ($questionsid as $questionid) {
-        ['question' => $question, 'usagecount' => $usagecount, 'status' => $status] =
-            \tool_enva\utils::purge_question($questionid, $notafter);
-        cli_writeln("Question ID: {$question->id}, Name: {$question->name}, Usage Count: $usagecount");
-        if ($status == 'ok') {
-            cli_writeln("Question ID: {$question->id} is not in use and older than " .
-                date('d/m/Y H:i:s', $notafter) . ", ready for deletion.");
-        } else {
-            if ($status == 'toorecent') {
-                $lastime = !empty($question->timemodified) ? date('d/m/Y H:i:s', $question->timemodified) : 'N/A';
-                cli_writeln("Question ID: {$question->id} is not in use but too recent ($lastime), skipping deletion.");
+        try {
+            cli_writeln("Processing question ID $questionid...");
+            ['question' => $question, 'usagecount' => $usagecount, 'status' => $status, 'type' => $type] =
+                \tool_enva\utils::purge_question($questionid, $notafter, $onlytype);
+            cli_writeln("Question ID: {$question->id}, Name: {$question->name}, Usage Count: $usagecount, Type: $type, ".
+                "Status: $status, Last Modified: " . date('d/m/Y H:i:s', $question->timemodified ?? 0));
+            if ($status == 'ok') {
+                cli_writeln("Question ID: {$question->id} is not in use and older than " .
+                    date('d/m/Y H:i:s', $notafter) . ", ready for deletion.");
             } else {
-                cli_writeln("Question ID: {$question->id} is in use, skipping deletion ($status).");
+                if ($status == 'toorecent') {
+                    $lastime = !empty($question->timemodified) ? date('d/m/Y H:i:s', $question->timemodified) : 'N/A';
+                    cli_writeln("Question ID: {$question->id} is not in use but too recent ($lastime), skipping deletion.");
+                } else {
+                    cli_writeln("Question ID: {$question->id} is in use, skipping deletion ($status).");
+                }
             }
-
+        } catch (Exception $e) {
+            cli_writeln("Error processing question ID $questionid: " . $e->getMessage());
         }
     }
 }

@@ -45,20 +45,23 @@ Options:
 
 list($options, $unrecognised) = cli_get_params([
     'courseid' => null,
-    'list' => true, // This option is not used in this script but can be used for future enhancements.
     'allversions' => null, // Retrieve all versions of questions, not just the latest.
     'categoryid' => null, // Category ID to list questions from.
     'help' => false,
 ], [
     'c' => 'courseid',
-    'l' => 'list',
     'a' => 'allversions',
     't' => 'categoryid',
     'h' => 'help',
 ]);
+if ($options['help']) {
+    cli_writeln($usage);
+    exit(2);
+}
 $courseid = $options['courseid'] ?? null;
 $categoryid = $options['categoryid'] ?? null;
 $allversions = $options['allversions'] ?? false;
+global $DB;
 // Prepare the query to select IDs for deletion.
 if (!empty($courseid)) {
     $contextid = context_course::instance($courseid)->id;
@@ -67,7 +70,7 @@ if (!empty($courseid)) {
     global $DB;
     $questioncategories = $DB->get_records('question_categories', ['id' => $categoryid]);
 } else {
-    cli_error("No course ID or category ID provided.");
+    $questioncategories = $DB->get_records('question_categories');
 }
 
 if (empty($questioncategories)) {
@@ -78,25 +81,22 @@ $finder = question_bank::get_finder();
 $questioncount = 0;
 $notreadycount = 0;
 $allquesstionscount = 0;
+cli_writeln("courseid,categoryid,categoryname,questioncount,allquestionsincategories");
 foreach ($questioncategories as $category) {
     $qcparams = ['categoryid' => $category->id];
     if ($allversions) {
-        $questionsid = \tool_enva\utils::get_questions_from_categories([$category->id]);
+        $questionsid = \tool_enva\utils::get_questions_from_categories([$category->id], false);
     } else {
         $questionsid = $finder->get_questions_from_categories([$category->id], "");
     }
-    $questions = array_map(function($id) {
-        return question_bank::load_question_data($id);
-    }, $questionsid);
-    $notquestions = array_filter($questions, function($question) {
-        return $question->status !== question_version_status::QUESTION_STATUS_READY;
-    });
-    $allquestions = count(tool_enva\utils::get_questions_from_categories([$category->id], false));
-    cli_writeln("{$category->id} ({$category->name}),". count($questions) . ", " . count($notquestions). ", $allquestions");
-    $questioncount += count($questions);
-    $notreadycount += count($notquestions);
-    $allquesstionscount += $allquestions;
+    $ccount = tool_enva\utils::count_questions_from_categories([$category->id], false); // This will count even
+    // random questions (as they have question.parent != 0).
+    $questioncontext = context::instance_by_id($category->contextid);
+    $coursecontext = $questioncontext->get_course_context(false);
+    $courseid = $coursecontext ? $coursecontext->instanceid : SITEID;
+    cli_writeln("{$courseid},{$category->id},\"{$category->name}\",". count($questionsid) . ", $ccount");
+    $questioncount += count($questionsid);
+    $allquesstionscount += $ccount;
 }
-cli_writeln("Total questions listed: $questioncount");
-cli_writeln("Total no ready questions: $notreadycount");
-cli_writeln("Total questions in all categories (root and non root): $allquesstionscount");
+// We write the total line.
+cli_writeln("1,0,Total,$questioncount,$allquesstionscount");

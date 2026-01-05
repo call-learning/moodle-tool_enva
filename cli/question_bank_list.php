@@ -54,6 +54,10 @@ list($options, $unrecognised) = cli_get_params([
     'a' => 'allversions',
     'h' => 'help',
 ]);
+if ($options['help']) {
+    cli_writeln($usage);
+    exit(2);
+}
 $courseid = $options['courseid'] ?? null;
 $allversions = $options['allversions'] ?? false;
 
@@ -81,7 +85,7 @@ cli_writeln("Listing questions for course ID $courseid, in categories: " .
     }, $questioncategories)) . ".");
 foreach ($questioncategories as $category) {
     if ($allversions) {
-        $questionsid = \tool_enva\utils::get_questions_from_categories([$category->id]);
+        $questionsid = \tool_enva\utils::get_questions_from_categories([$category->id], false);
     } else {
         $questionsid = $finder->get_questions_from_categories([$category->id], "");
     }
@@ -94,7 +98,7 @@ foreach ($questioncategories as $category) {
         $timecreated = !empty($question->timecreated) ? date('d/m/Y H:i:s', $question->timecreated) : 'N/A';
         cli_writeln("Question ID: {$question->id}, Name: {$question->name}, Usage Count: $usagecount, " .
             "Category: {$category->name}, Time Modified: $timemodified, Time Created: $timecreated," .
-            " Status: {$question->status}, Type: {$question->qtype}");
+            " Status: {$question->status}, Type: {$question->qtype}, Version: {$question->version}");
         $questioncount++;
         if ($usagecount == 0) {
             $unusedcount++;
