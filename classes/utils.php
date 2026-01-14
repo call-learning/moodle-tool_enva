@@ -116,6 +116,20 @@ class utils {
         return $returnval;
     }
 
+    /**
+     * Cleanup duplicated subquestions in multianswer questions.
+     *
+     * @return void
+     * @throws \dml_exception
+     */
+    public static function cleanup_duplicate_subquestions(): void {
+        $task = new \qtype_multianswer\task\cleanup_duplicate_subquestions();
+        echo "Checking for duplicated subquestions...\n";
+        echo "found " . count($task->find_duplicated_subquestions()) . " duplicated subquestions.\n";
+        if (count($task->find_duplicated_subquestions()) > 0) {
+            $task->execute();
+        }
+    }
 
 }
 

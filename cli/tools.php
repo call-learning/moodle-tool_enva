@@ -40,7 +40,7 @@ Options:
     --name=<frankenstyle>       Name of the function to test/run
 ";
 
-list($options, $unrecognised) = cli_get_params([
+[$options, $unrecognised] = cli_get_params([
     'help' => false,
     'name' => null,
 ], [
@@ -56,14 +56,15 @@ if ($options['help']) {
     cli_writeln($usage);
     exit(2);
 }
-$possiblefunctions = ['print_export_cohorts', 'print_yearone_users_with_empty_data'];
+$possiblefunctions = ['cleanup_duplicate_subquestions'];
 
 if ($options['name'] === null) {
     $options['name'] = $possiblefunctions[0];
 }
 
 if (in_array($options['name'], $possiblefunctions)) {
-    call_user_func($options['name']);
+    $callback = $options['name'];
+    \tool_enva\utils::$callback();
 } else {
     print ('Called function not in the list (' . implode(',', $possiblefunctions) . ')');
 }
