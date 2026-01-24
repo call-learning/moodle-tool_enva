@@ -53,12 +53,14 @@ list($options, $unrecognised) = cli_get_params([
     'olderthan' => time() - YEARSECS / 2, // Default about last 6 month.
     'allversions' => false, // Retrieve all versions of questions, not just the latest.
     'onlytype' => 'random',
+    'everything' => false,
     'help' => false,
 ], [
     'c' => 'courseid',
     't' => 'categoryid',
     'o' => 'olderthan',
     'a' => 'allversions',
+    'e' => 'everything',
     'h' => 'help',
 ]);
 $courseid = $options['courseid'] ?? null;
@@ -76,7 +78,12 @@ if (!empty($courseid)) {
     global $DB;
     $questioncategories = $DB->get_records('question_categories', ['id' => $options['categoryid']]);
 } else {
-    cli_error("No course ID or category ID provided.");
+    if (!$options['everything']) {
+        cli_writeln($usage);
+        exit(0);
+    }
+    global $DB;
+    $questioncategories = $DB->get_records('question_categories');
 }
 
 if (empty($questioncategories)) {
