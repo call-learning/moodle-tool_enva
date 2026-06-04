@@ -43,7 +43,7 @@ class utils {
     public static function get_questions_from_categories(array $categories, bool $rootquestionly = true): array {
         global $DB;
 
-        list($qcsql, $qcparams) = $DB->get_in_or_equal($categories, SQL_PARAMS_NAMED, 'qc');
+        [$qcsql, $qcparams] = $DB->get_in_or_equal($categories, SQL_PARAMS_NAMED, 'qc');
         $sql = "SELECT q.id, q.id AS id2
                   FROM {question} q
                   JOIN {question_versions} qv ON qv.questionid = q.id
@@ -83,8 +83,4 @@ class utils {
         }
         return $returnval;
     }
-
-
 }
-
-

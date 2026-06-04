@@ -40,7 +40,7 @@ Options:
     --deletedusers              Delete question_attempt_steps for deleted users
 ";
 
-list($options, $unrecognised) = cli_get_params([
+[$options, $unrecognised] = cli_get_params([
     'help' => false,
     'deletedusers' => null,
 ], [

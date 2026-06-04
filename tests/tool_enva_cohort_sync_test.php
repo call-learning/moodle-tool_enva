@@ -42,11 +42,12 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_enva_cohort_sync_test extends utils {
+#[\PHPUnit\Framework\Attributes\CoversClass(cohort_sync_importer::class)]
+final class tool_enva_cohort_sync_test extends utils {
     /**
      * Simple import
      */
-    public function test_csv_import_simple() {
+    public function test_csv_import_simple(): void {
         global $DB;
         $this->resetAfterTest(true);
         $messagesink = $this->redirectMessages();
@@ -114,18 +115,23 @@ class tool_enva_cohort_sync_test extends utils {
         $this->assertTrue(user_has_role_assignment(
             $usera5->id,
             $studentrole->id,
-            $contextcourse604->id));
+            $contextcourse604->id
+        ));
         $this->assertTrue(user_has_role_assignment(
             $usera5->id,
             $studentrole->id,
-            $contextcourse604->id));
+            $contextcourse604->id
+        ));
         $this->assertTrue(user_has_role_assignment(
             $usera2->id,
             $studentguestrole->id,
-            $contextcourse502->id));
+            $contextcourse502->id
+        ));
         $this->assertEquals(1, $messagesink->count());
         $firstmessage = $messagesink->get_messages()[0];
-        $this->assertEquals(get_string('message:syncallcohortok:title', 'tool_enva'),
-            $firstmessage->subject);
+        $this->assertEquals(
+            get_string('message:syncallcohortok:title', 'tool_enva'),
+            $firstmessage->subject
+        );
     }
 }

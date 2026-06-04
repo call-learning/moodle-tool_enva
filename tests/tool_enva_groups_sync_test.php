@@ -43,11 +43,12 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_enva_groups_sync_test extends utils {
+#[\PHPUnit\Framework\Attributes\CoversClass(group_sync_importer::class)]
+final class tool_enva_groups_sync_test extends utils {
     /**
      * A simple import test
      */
-    public function test_csv_import_simple() {
+    public function test_csv_import_simple(): void {
         $this->resetAfterTest(true);
         // Now do the group sync import.
         $importer = new group_sync_importer(file_get_contents(__DIR__ . '/fixtures/group_sync_example.csv'));
@@ -56,10 +57,9 @@ class tool_enva_groups_sync_test extends utils {
 
         $importer->process_import();
 
-        $c502groups = array_values(array_map(function($g) {
-            return $g->name;
-        }, groups_get_all_groups(502)));
-        foreach (["A1Gr4.1",
+        $c502groups = array_values(array_map(fn($g) => $g->name, groups_get_all_groups(502)));
+        foreach (
+            ["A1Gr4.1",
             "A1Gr4.2",
             "A1Gr4.3",
             "A1Gr4.4",
@@ -70,16 +70,16 @@ class tool_enva_groups_sync_test extends utils {
             "A1Gr8.5",
             "A1Gr8.6",
             "A1Gr8.7",
-            "A1Gr8.8", ] as $key => $value) {
+            "A1Gr8.8", ] as $key => $value
+        ) {
             $this->assertArrayHasKey($key, $c502groups);
             $this->assertSame($value, $c502groups[$key]);
         }
 
-        $c604groups = array_values(array_map(function($g) {
-            return $g->name;
-        }, groups_get_all_groups(604)));
+        $c604groups = array_values(array_map(fn($g) => $g->name, groups_get_all_groups(604)));
 
-        foreach (["A3Gr4.1",
+        foreach (
+            ["A3Gr4.1",
             "A3Gr4.2",
             "A3Gr4.3",
             "A3Gr4.4",
@@ -91,17 +91,17 @@ class tool_enva_groups_sync_test extends utils {
             "A3Gr8.6",
             "A3Gr8.7",
             "A3Gr8.8",
-        ] as $key => $value) {
+            ] as $key => $value
+        ) {
             $this->assertArrayHasKey($key, $c604groups);
             $this->assertSame($value, $c604groups[$key]);
         }
-
     }
 
     /**
      * A simple import with purged
      */
-    public function test_csv_import_purged() {
+    public function test_csv_import_purged(): void {
         $this->resetAfterTest(true);
 
         // Create existing groups.
@@ -124,16 +124,12 @@ class tool_enva_groups_sync_test extends utils {
 
         $importer->process_import();
 
-        $c502groupsid = array_values(array_map(function($g) {
-            return $g->id;
-        }, groups_get_all_groups(502)));
+        $c502groupsid = array_values(array_map(fn($g) => $g->id, groups_get_all_groups(502)));
 
         $this->assertCount(12, $c502groupsid);
         $this->assertNotContains($gidpurged, $c502groupsid);
 
-        $c604groupsid = array_values(array_map(function($g) {
-            return $g->id;
-        }, groups_get_all_groups(604)));
+        $c604groupsid = array_values(array_map(fn($g) => $g->id, groups_get_all_groups(604)));
         $this->assertCount(13, $c604groupsid);
         $this->assertContains($gidnonpurged, $c604groupsid);
     }
@@ -141,7 +137,7 @@ class tool_enva_groups_sync_test extends utils {
     /**
      * Existing group modification
      */
-    public function test_csv_import_purged_with_existing_modified() {
+    public function test_csv_import_purged_with_existing_modified(): void {
         global $DB;
         $this->resetAfterTest(true);
 
@@ -174,9 +170,7 @@ class tool_enva_groups_sync_test extends utils {
         $importer->process_import();
 
         $allgroups = groups_get_all_groups(502);
-        $c502groupsid = array_values(array_map(function($g) {
-            return $g->id;
-        }, $allgroups));
+        $c502groupsid = array_values(array_map(fn($g) => $g->id, $allgroups));
 
         $this->assertCount(12, $c502groupsid);
         $this->assertNotContains($gidpurged, $c502groupsid);

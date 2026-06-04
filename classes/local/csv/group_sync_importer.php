@@ -38,7 +38,6 @@ use stdClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class group_sync_importer extends base_csv_importer {
-
     /**
      * Prefix for updated cohort syncs
      */
@@ -55,7 +54,7 @@ class group_sync_importer extends base_csv_importer {
      */
     public function process_row($row, $rowindex) {
         global $DB;
-        list($course, $groups) = $this->get_components($row, $rowindex);
+        [$course, $groups] = $this->get_components($row, $rowindex);
         if (!$course) {
             return false;
         }
@@ -162,7 +161,7 @@ class group_sync_importer extends base_csv_importer {
      * @return bool
      */
     public function validate_row($row, $rowindex) {
-        list($course, $groups) = $this->get_components($row, $rowindex);
+        [$course, $groups] = $this->get_components($row, $rowindex);
         if (!$course) {
             return false;
         }
@@ -179,5 +178,4 @@ class group_sync_importer extends base_csv_importer {
             'courseid', 'groups',
         ];
     }
-
 }

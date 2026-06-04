@@ -51,5 +51,4 @@ class empty_yearone_survey_data extends scheduled_task {
     public function execute() {
         manage_survey::delete_user_surveyinfo_yearone_when_empty();
     }
-
 }

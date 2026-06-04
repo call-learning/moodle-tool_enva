@@ -40,7 +40,7 @@ Options:
     --name=<frankenstyle>       Name of the function to test/run
 ";
 
-list($options, $unrecognised) = cli_get_params([
+[$options, $unrecognised] = cli_get_params([
     'help' => false,
     'name' => null,
 ], [

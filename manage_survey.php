@@ -56,12 +56,13 @@ echo $output->heading(get_string('managesurvey', 'tool_enva'));
 if (strpos($action, 'delete') === 0) {
     require_sesskey();
     if (!$step) {
-        echo $output->confirm(get_string($action . 'confirm', 'tool_enva'),
+        echo $output->confirm(
+            get_string($action . 'confirm', 'tool_enva'),
             new moodle_url($PAGE->url, ['action' => $action, 'step' => "delete"]),
-            new moodle_url($PAGE->url));
+            new moodle_url($PAGE->url)
+        );
         echo $output->footer();
         exit;
-
     } else if ($step == "delete") {
         switch ($action) {
             case 'deletesurveyinfo':

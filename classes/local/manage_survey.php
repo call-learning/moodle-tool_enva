@@ -40,7 +40,6 @@ use stdClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class manage_survey {
-
     /**
      * @var $ENVA_SURVEY_DUMMY_DATA
      */
@@ -74,7 +73,7 @@ class manage_survey {
         global $DB, $CFG;
         require_once($CFG->libdir . '/csvlib.class.php');
 
-        list($sql, $params) = self::get_sql_yearone_users_with_empty_data();
+        [$sql, $params] = self::get_sql_yearone_users_with_empty_data();
         $rs = $DB->get_recordset_sql($sql, $params);
         $csvexport = new csv_export_writer();
         $csvexport->set_filename($filename ? $filename : 'emptydata.csv');
@@ -103,7 +102,7 @@ class manage_survey {
      * @throws dml_exception
      */
     public static function get_sql_yearone_users_with_empty_data() {
-        list($sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid) = self::get_sql_user_data_parts();
+        [$sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid] = self::get_sql_user_data_parts();
         // We ignore the sqlcohortid param as we just take A1 as a cohort.
         $sqlquery = "SELECT DISTINCT
 				u.id, u.username, u.email, u.firstname, u.lastname, c.name, ufd.shortname AS ufdshortname , uid.id AS ufdid
@@ -129,8 +128,8 @@ class manage_survey {
         $studentcohortsid = self::get_survey_to_reset_cohorts_list();
         // Select all user fields which are named 'choix...'.
         $selecteduserfields = $DB->get_fieldset_select('user_info_field', "id", "shortname LIKE 'choix%'");
-        list($sqlcohortid, $paramscohortid) = $DB->get_in_or_equal($studentcohortsid, SQL_PARAMS_NAMED, 'pcohort');
-        list($sqlfieldid, $paramsfieldid) = $DB->get_in_or_equal($selecteduserfields, SQL_PARAMS_NAMED, 'pfield');
+        [$sqlcohortid, $paramscohortid] = $DB->get_in_or_equal($studentcohortsid, SQL_PARAMS_NAMED, 'pcohort');
+        [$sqlfieldid, $paramsfieldid] = $DB->get_in_or_equal($selecteduserfields, SQL_PARAMS_NAMED, 'pfield');
 
         return [$sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid];
     }
@@ -150,11 +149,15 @@ class manage_survey {
             $allcohortsid = [];
             $cohortstoresetnames = get_config('tool_enva', 'cohortstoreset');
             if (!empty($cohortstoresetnames)) {
-                $cohortstoresetarray = array_map('static::remove_spaces_lowercase',
-                    explode(',', $cohortstoresetnames));
+                $cohortstoresetarray = array_map(
+                    [self::class, 'remove_spaces_lowercase'],
+                    explode(',', $cohortstoresetnames)
+                );
                 // We need to match strings that can have been spaced out quite randomly, so no sql here.
-                $allcohorts = array_map('static::remove_spaces_lowercase',
-                    $DB->get_records_menu('cohort', [], '', 'id,idnumber'));
+                $allcohorts = array_map(
+                    [self::class, 'remove_spaces_lowercase'],
+                    $DB->get_records_menu('cohort', [], '', 'id,idnumber')
+                );
                 $allcohortsid = array_intersect($allcohorts, $cohortstoresetarray);
             }
         }
@@ -168,7 +171,8 @@ class manage_survey {
      * @return string
      */
     private static function remove_spaces_lowercase(string $entry): string {
-        return preg_replace("/\s+/", "", strtolower($entry));;
+        return preg_replace("/\s+/", "", strtolower($entry));
+        ;
     }
 
     // Field deletion.
@@ -183,7 +187,7 @@ class manage_survey {
         $transaction = $DB->start_delegated_transaction();
         try {
             // First : delete all user fields which are named 'choix...'.
-            list($sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid) = self::get_sql_user_data_parts();
+            [$sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid] = self::get_sql_user_data_parts();
             $sqlselect = "fieldid {$sqlfieldid}
 			AND EXISTS (SELECT id
                 FROM {cohort_members} cm
@@ -232,7 +236,7 @@ class manage_survey {
         try {
             // Obviously here we could have done a delete_records_select, but we wanted to use the exact same query
             // as the export function.
-            list($sql, $params) = self::get_sql_yearone_users_with_empty_data();
+            [$sql, $params] = self::get_sql_yearone_users_with_empty_data();
             $rs = $DB->get_recordset_sql($sql, $params);
             $uidatatodelete = [];
             foreach ($rs as $r) {

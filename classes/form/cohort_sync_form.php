@@ -36,7 +36,6 @@ use moodleform;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohort_sync_form extends moodleform {
-
     use csv_form_base_trait;
 
     /**

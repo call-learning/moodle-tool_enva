@@ -41,10 +41,10 @@ Options:
     -o --olderthan=<timestamp>  Timestamp to filter questions older than this value (default: last 6 months).
     -a --allversions            Retrieve all versions of questions, not just the latest.
     -h --help                   Print this help.
-    
+
 ";
 
-list($options, $unrecognised) = cli_get_params([
+[$options, $unrecognised] = cli_get_params([
     'courseid' => null,
     'categoryid' => null,
     'olderthan' => time() - YEARSECS / 2, // Default about last 6 month.
@@ -60,7 +60,7 @@ list($options, $unrecognised) = cli_get_params([
 $courseid = $options['courseid'] ?? null;
 $allversions = $options['allversions'] ?? false;
 
-// Prepare the query to select IDs for deletion
+// Prepare the query to select IDs for deletion.
 if (!empty($courseid)) {
     $contextid = context_course::instance($courseid)->id;
     $questioncategories = \qbank_managecategories\helper::get_categories_for_contexts($contextid);
@@ -102,7 +102,6 @@ foreach ($questioncategories as $category) {
             } else {
                 cli_writeln("Question ID: {$question->id} is in use, skipping deletion ($status).");
             }
-
         }
     }
 }

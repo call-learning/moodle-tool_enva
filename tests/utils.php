@@ -58,8 +58,7 @@ class utils extends advanced_testcase {
                 'course' => __DIR__ . '/fixtures/course.csv',
                 'user_info_field' => __DIR__ . '/fixtures/user_info_field.csv',
                 'role' => __DIR__ . '/fixtures/role.csv',
-            ]
-        );
+            ]);
         $dataset->to_database();
 
         $evecohorts = $DB->get_records('cohort');
@@ -71,7 +70,6 @@ class utils extends advanced_testcase {
                 $this->users[$i++] = $user;
             }
         }
-
     }
 
     /**

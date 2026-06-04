@@ -43,7 +43,7 @@ Options:
     -h --help                   Print this help.
 ";
 
-list($options, $unrecognised) = cli_get_params([
+[$options, $unrecognised] = cli_get_params([
     'courseid' => null,
     'list' => true, // This option is not used in this script but can be used for future enhancements.
     'allversions' => null, // Retrieve all versions of questions, not just the latest.
@@ -85,14 +85,14 @@ foreach ($questioncategories as $category) {
     } else {
         $questionsid = $finder->get_questions_from_categories([$category->id], "");
     }
-    $questions = array_map(function($id) {
+    $questions = array_map(function ($id) {
         return question_bank::load_question_data($id);
     }, $questionsid);
-    $notquestions = array_filter($questions, function($question) {
+    $notquestions = array_filter($questions, function ($question) {
         return $question->status !== question_version_status::QUESTION_STATUS_READY;
     });
     $allquestions = count(tool_enva\utils::get_questions_from_categories([$category->id], false));
-    cli_writeln("{$category->id} ({$category->name}),". count($questions) . ", " . count($notquestions). ", $allquestions");
+    cli_writeln("{$category->id} ({$category->name})," . count($questions) . ", " . count($notquestions) . ", $allquestions");
     $questioncount += count($questions);
     $notreadycount += count($notquestions);
     $allquesstionscount += $allquestions;

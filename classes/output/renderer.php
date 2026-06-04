@@ -30,7 +30,6 @@ use plugin_renderer_base;
  * Rendering methods
  */
 class renderer extends plugin_renderer_base {
-
     /**
      * Renders enva tool menu
      *
@@ -44,5 +43,4 @@ class renderer extends plugin_renderer_base {
         }
         return $this->box($output, 'menu');
     }
-
 }

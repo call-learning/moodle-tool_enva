@@ -41,11 +41,12 @@ require_once($CFG->dirroot . '/admin/tool/enva/tests/utils.php');
  * @author     Laurent David <laurent@call-learning.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_enva_test extends utils {
+#[\PHPUnit\Framework\Attributes\CoversClass(manage_survey::class)]
+final class tool_enva_test extends utils {
     /**
      * Test deletion of survey info
      */
-    public function test_delete_user_surveyinfo() {
+    public function test_delete_user_surveyinfo(): void {
         $this->resetAfterTest(true);
         $useryearone = $this->users[0];
         $useryeartwo = $this->users[self::USER_PER_COHORT];
@@ -82,7 +83,6 @@ class tool_enva_test extends utils {
         $this->assertEquals("Vétérinaire praticien canin", $useryearonefields[1]->data);
         $this->assertEmpty($useryeartwofields[1]->data);
         $this->assertEquals("Autre", $userpersonnelfields[1]->data);
-
     }
 
     /**
@@ -108,7 +108,7 @@ class tool_enva_test extends utils {
     /**
      * Test that we delete the survey info when empty (as string empty)
      */
-    public function test_delete_user_surveyinfo_yearone_when_empty() {
+    public function test_delete_user_surveyinfo_yearone_when_empty(): void {
         $this->resetAfterTest(true);
         $useryearone = $this->users[0];
         $useryearonewithresponse = $this->users[1];
@@ -156,5 +156,4 @@ class tool_enva_test extends utils {
         $this->assertTrue($useryeartwofields[1]->data == "Vétérinaire praticien canin");// We don't touch this field.
         $this->assertTrue($userpersonnelfields[1]->data == "Autre"); // We don't touch this field.
     }
-
 }

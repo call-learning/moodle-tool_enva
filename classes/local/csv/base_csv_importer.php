@@ -86,7 +86,6 @@ abstract class base_csv_importer {
                 $importer->cleanup();
                 return;
             }
-
         } else {
             $this->importid = $importid;
 
@@ -201,7 +200,6 @@ abstract class base_csv_importer {
         } else {
             throw new importer_exception(get_string('cannotopenimporter', 'tool_enva'));
         }
-
     }
 
     /**

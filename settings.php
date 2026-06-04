@@ -37,7 +37,8 @@ if ($hassiteconfig) {
     $surveypage = new admin_settingpage(
         'envasurvey',
         get_string('surveyparameters', 'tool_enva'),
-        'tool/enva:managesurvey');
+        'tool/enva:managesurvey'
+    );
     $envatools->add('tool_enva', $surveypage);
 
     // Replacement and patterns for group name (see preg_replace).
@@ -50,30 +51,28 @@ if ($hassiteconfig) {
             // Le reste: les A2 => A6.
             \tool_enva\utils::DEFAULT_COHORTS_TO_RESET_NAMES,
             PARAM_RAW
-        ));
-
-    $envatools->add('tool_enva', new admin_externalpage(
-            'enva_manage_cohortcontent',
-            get_string('managesurvey', 'tool_enva'),
-            "$CFG->wwwroot/$CFG->admin/tool/enva/manage_survey.php",
-            'tool/enva:managesurvey'
         )
     );
 
     $envatools->add('tool_enva', new admin_externalpage(
-            'enva_manage_cohortsync',
-            get_string('managecohortsync', 'tool_enva'),
-            "$CFG->wwwroot/$CFG->admin/tool/enva/manage_cohort_sync.php",
-            'tool/enva:managecohortsync'
-        )
-    );
+        'enva_manage_cohortcontent',
+        get_string('managesurvey', 'tool_enva'),
+        "$CFG->wwwroot/$CFG->admin/tool/enva/manage_survey.php",
+        'tool/enva:managesurvey'
+    ));
+
     $envatools->add('tool_enva', new admin_externalpage(
-            'enva_manage_groupsync',
-            get_string('managegroupsync', 'tool_enva'),
-            "$CFG->wwwroot/$CFG->admin/tool/enva/manage_group_sync.php",
-            'tool/enva:managegroupsync'
-        )
-    );
+        'enva_manage_cohortsync',
+        get_string('managecohortsync', 'tool_enva'),
+        "$CFG->wwwroot/$CFG->admin/tool/enva/manage_cohort_sync.php",
+        'tool/enva:managecohortsync'
+    ));
+    $envatools->add('tool_enva', new admin_externalpage(
+        'enva_manage_groupsync',
+        get_string('managegroupsync', 'tool_enva'),
+        "$CFG->wwwroot/$CFG->admin/tool/enva/manage_group_sync.php",
+        'tool/enva:managegroupsync'
+    ));
 
     $ADMIN->add('accounts', $envatools);
 }

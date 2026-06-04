@@ -66,12 +66,17 @@ class sync_all_course_cohort_enrol extends adhoc_task {
                 // Send an email to the admin.
                 self::send_admin_message(
                     get_string('message:syncallcohortok:title', 'tool_enva'),
-                    get_string('message:syncallcohortok', 'tool_enva'));
+                    get_string('message:syncallcohortok', 'tool_enva')
+                );
             } catch (moodle_exception $e) {
                 self::send_admin_message(
                     get_string('message:syncallcohortfailed:title', 'tool_enva'),
-                    get_string('message:syncallcohortfailed', 'tool_enva',
-                        (object) ['error', $e->getMessage(), 'trace' => $e->getTraceAsString()]));
+                    get_string(
+                        'message:syncallcohortfailed',
+                        'tool_enva',
+                        (object) ['error', $e->getMessage(), 'trace' => $e->getTraceAsString()]
+                    )
+                );
                 $transaction->rollback($e);
             }
             $transaction->dispose();

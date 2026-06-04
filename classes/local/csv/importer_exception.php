@@ -47,10 +47,15 @@ class importer_exception extends moodle_exception {
      * @param mixed $a Extra words and phrases that might be required in the error string
      * @param string $debuginfo optional debugging information
      */
-    public function __construct($detailedmessage, $errorcode = 'csvimporterror', $module = 'tool_enva', $link = '', $a = null,
-        $debuginfo = null) {
+    public function __construct(
+        $detailedmessage,
+        $errorcode = 'csvimporterror',
+        $module = 'tool_enva',
+        $link = '',
+        $a = null,
+        $debuginfo = null
+    ) {
         parent::__construct($errorcode, $module = '', $link = '', $a = null, $debuginfo = null);
         $this->message .= ' - ' . $detailedmessage;
     }
-
 }
