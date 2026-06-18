@@ -45,7 +45,9 @@ switch ($action) {
     case 'downloademptysurvey':
         require_sesskey();
         $csvexport = manage_survey::export_yearone_users_with_empty_data();
-        $csvexport->download_file();
+        if (!$csvexport) {
+            $csvexport->download_file();
+        }
         exit;
 }
 

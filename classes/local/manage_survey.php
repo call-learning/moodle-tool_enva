@@ -55,7 +55,9 @@ class manage_survey {
      */
     public static function print_yearone_users_with_empty_data($filename = "") {
         $csvexport = self::export_yearone_users_with_empty_data($filename);
-
+        if (empty($csvexport)) {
+            return "";
+        }
         return $csvexport->print_csv_data();
     }
 
@@ -65,15 +67,20 @@ class manage_survey {
      * Export cohorts as CSV, year one with empty data
      *
      * @param string $filename
-     * @return csv_export_writer
+     * @return csv_export_writer|null
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function export_yearone_users_with_empty_data($filename = "") {
+    public static function export_yearone_users_with_empty_data($filename = ""): ?csv_export_writer {
         global $DB, $CFG;
         require_once($CFG->libdir . '/csvlib.class.php');
 
-        [$sql, $params] = self::get_sql_yearone_users_with_empty_data();
+        $sqlparts = self::get_sql_yearone_users_with_empty_data();
+        if (!empty($sqlparts)) {
+            return null;
+        }
+        [$sql, $params] = $sqlparts;
+
         $rs = $DB->get_recordset_sql($sql, $params);
         $csvexport = new csv_export_writer();
         $csvexport->set_filename($filename ? $filename : 'emptydata.csv');
@@ -97,35 +104,42 @@ class manage_survey {
     /**
      * Get year one users with empty data
      *
-     * @return array
+     * @return array|null
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function get_sql_yearone_users_with_empty_data() {
-        [$sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid] = self::get_sql_user_data_parts();
+    public static function get_sql_yearone_users_with_empty_data(): ?array {
+        $sqlparts = self::get_sql_user_data_parts();
+        if (empty($sqlparts)) {
+            return null;
+        }
+        [$sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid] = $sqlparts;
         // We ignore the sqlcohortid param as we just take A1 as a cohort.
         $sqlquery = "SELECT DISTINCT
-				u.id, u.username, u.email, u.firstname, u.lastname, c.name, ufd.shortname AS ufdshortname , uid.id AS ufdid
-				FROM {user_info_data} uid
-				LEFT JOIN {user_info_field} ufd ON ufd.id = uid.fieldid
-				LEFT JOIN {user} u ON uid.userid = u.id
-				LEFT JOIN {cohort_members} cm ON cm.userid = u.id
-				LEFT JOIN {cohort} c ON cm.cohortid = c.id
-                WHERE uid.data=\"\" AND c.name = :yearonename AND ufd.id {$sqlfieldid}";
+            u.id, u.username, u.email, u.firstname, u.lastname, c.name, ufd.shortname AS ufdshortname , uid.id AS ufdid
+            FROM {user_info_data} uid
+            LEFT JOIN {user_info_field} ufd ON ufd.id = uid.fieldid
+            LEFT JOIN {user} u ON uid.userid = u.id
+            LEFT JOIN {cohort_members} cm ON cm.userid = u.id
+            LEFT JOIN {cohort} c ON cm.cohortid = c.id
+            WHERE uid.data=\"\" AND c.name = :yearonename AND ufd.id {$sqlfieldid}";
 
-        return [$sqlquery, array_merge($paramsfieldid, ['yearonename' => 'A1'])];
+            return [$sqlquery, array_merge($paramsfieldid, ['yearonename' => 'A1'])];
     }
 
     /**
      * Get SQL query to retrieve user info field data for the survey
      *
-     * @return array
+     * @return array|null
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function get_sql_user_data_parts() {
+    public static function get_sql_user_data_parts(): ?array {
         global $DB;
         $studentcohortsid = self::get_survey_to_reset_cohorts_list();
+        if (empty($studentcohortsid)) {
+            return null;
+        }
         // Select all user fields which are named 'choix...'.
         $selecteduserfields = $DB->get_fieldset_select('user_info_field', "id", "shortname LIKE 'choix%'");
         [$sqlcohortid, $paramscohortid] = $DB->get_in_or_equal($studentcohortsid, SQL_PARAMS_NAMED, 'pcohort');
@@ -172,10 +186,10 @@ class manage_survey {
      */
     private static function remove_spaces_lowercase(string $entry): string {
         return preg_replace("/\s+/", "", strtolower($entry));
-        ;
     }
 
     // Field deletion.
+
     /**
      *
      * Delete all user info data for all involved cohort so we trigger the the form when user first logs in
@@ -187,7 +201,11 @@ class manage_survey {
         $transaction = $DB->start_delegated_transaction();
         try {
             // First : delete all user fields which are named 'choix...'.
-            [$sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid] = self::get_sql_user_data_parts();
+            $sqlparts = self::get_sql_user_data_parts();
+            if (empty($sqlparts)) {
+                return;
+            }
+            [$sqlcohortid, $paramscohortid, $sqlfieldid, $paramsfieldid] = $sqlparts;
             $sqlselect = "fieldid {$sqlfieldid}
 			AND EXISTS (SELECT id
                 FROM {cohort_members} cm
@@ -236,7 +254,11 @@ class manage_survey {
         try {
             // Obviously here we could have done a delete_records_select, but we wanted to use the exact same query
             // as the export function.
-            [$sql, $params] = self::get_sql_yearone_users_with_empty_data();
+            $sqlparts = self::get_sql_yearone_users_with_empty_data();
+            if (empty($sqlparts)) {
+                return;
+            }
+            [$sql, $params] = $sqlparts;
             $rs = $DB->get_recordset_sql($sql, $params);
             $uidatatodelete = [];
             foreach ($rs as $r) {
